@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Test para Oposiciones de Técnico en Radiodiagnóstico</title>
+<style>
+  :root {
+    --color-primary: #00695c;
+    --color-primary-dark: #004d40;
+    --color-accent: #ff7043;
+    --color-bg: #f0f4f5;
+    --color-white: #fff;
+    --color-text: #263238;
+    --color-text-light: #607d8b;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin:0; padding:0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 15px;
+  }
+  header {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 2rem;
+    margin: 0.2em 0 0.1em;
+    color: var(--color-primary-dark);
+    font-weight: 700;
+  }
+  header p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-light);
+    margin: 0 0 0.8em;
+  }
+  main {
+    background: var(--color-white);
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 8px 12px rgb(0 0 0 / 0.1);
+  }
+  label {
+    font-weight: 600;
+  }
+  select {
+    margin: 0.5em 0 1em;
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1.8px solid var(--color-primary);
+    color: var(--color-primary-dark);
+    cursor: pointer;
+  }
+  #questions-container {
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #fafafa;
+    margin-bottom: 1.2em;
+  }
+  .question-block {
+    margin-bottom: 1.2em;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.8em;
+  }
+  .question-text {
+    margin-bottom: 0.4em;
+    font-weight: 600;
+  }
+  .options label {
+    display: block;
+    margin-left: 1.2em;
+    margin-bottom: 0.3em;
+    cursor: pointer;
+  }
+  button {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+    display: block;
+    margin: 0 auto;
+    user-select: none;
+  }
+  button:hover:not(:disabled){
+    background-color: var(--color-primary-dark);
+  }
+  button:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+  }
+  #result-container {
+    margin-top: 1.5em;
+    padding: 15px;
+    background-color: #e0f2f1;
+    border-radius: 10px;
+    box-shadow: 0 5px 10px rgb(0 0 0 / 0.1);
+  }
+  #result-container.pass {
+    background-color: #d0f0c0;
+    border: 2px solid #4caf50;
+    color: #2e7d32;
+  }
+  #result-container.fail {
+    background-color: #ffebee;
+    border: 2px solid #e53935;
+    color: #b71c1c;
+  }
+  #result-container h2 {
+    margin: 0 0 10px 0;
+  }
+  #result-details {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 12px;
+    font-size: 0.9rem;
+  }
+  .correct-answer {
+    color: #2e7d32;
+    font-weight: 700;
+  }
+  .incorrect-answer {
+    color: #b71c1c;
+    font-weight: 700;
+  }
+  .icon-bird {
+    display: inline-block;
+    margin-left: 8px;
+    vertical-align: middle;
+    width: 25px; height: 25px;
+  }
+
+  /* Radiodiagnóstico themed decoration */
+  header::before {
+    content: "☢";
+    font-size: 3rem;
+    color: var(--color-accent);
+    display: block;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    opacity: 0.15;
+    width: 150px;
+    height: 150px;
+    background: url("https://upload.wikimedia.org/wikipedia/commons/9/9b/Skull_icon_vector.svg") no-repeat center/contain;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Scrollbar for questions container */
+  #questions-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  #questions-container::-webkit-scrollbar-thumb {
+    background-color: var(--color-primary);
+    border-radius: 8px;
+  }
+  #questions-container::-webkit-scrollbar-track {
+    background: #f0f4f5;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+    main {
+      padding: 15px;
+    }
+    #questions-container {
+      max-height: 350px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Test para Oposiciones de Técnico en Radiodiagnóstico</h1>
+  <p>Los test pueden no incluir toda la información que hay en los temas, pero son muy útiles para poder dar un repaso. ¡Espero que os guste y gracias por usar mi página! Pronto añadire actualizaciones, pero de momento son todo el rato los mismos test pero hay mucha variedad de temas  &lt;3</p>
+</header>
+
+<main>
+  <label for="exam-selector">Selecciona el tema del examen:</label>
+  <select id="exam-selector" aria-label="Selecciona el tema del examen">
+    <option value="" disabled selected>-- Selecciona un examen --</option>
+  </select>
+
+  <div id="questions-container" aria-live="polite" aria-atomic="true" tabindex="0" aria-label="Contenedor de preguntas del examen"></div>
+
+  <button id="start-btn" disabled>Iniciar Examen</button>
+
+  <div id="result-container" aria-live="assertive" aria-atomic="true" tabindex="0"></div>
+</main>
+
+<script>
+  // Datos con preguntas y respuestas clasificados por tema/examen
+  const examsData = {
+    "Columna Vertebral": [
+      {q: "¿Cuál de las siguientes afirmaciones describe mejor la función de los procesos uncinados en las vértebras cervicales?", options: ["a) Proporcionan puntos de inserción para los músculos de la nuca.", "b) Limitan la flexión lateral y protegen los discos intervertebrales.", "c) Forman articulaciones con las costillas.", "d) Alojan la arteria vertebral."], answer: "b"},
+      {q: "¿Qué diferencia funcional clave existe entre el atlas (C1) y el axis (C2) en comparación con las demás vértebras cervicales?", options:["a) C1 y C2 soportan la mayor parte del peso de la cabeza.","b) C1 y C2 permiten una mayor flexión y extensión del cuello.","c) C1 y C2 están especializados para la rotación de la cabeza.","d) C1 y C2 protegen la médula espinal de manera más efectiva."], answer: "c"},
+      {q: "¿Cómo influye la anatomía de las apófisis articulares en las vértebras torácicas en el rango de movimiento de esta región de la columna?", options:["a) Permiten una flexión y extensión amplias.","b) Facilitan la rotación significativa.","c) Limitan la flexión y extensión, pero permiten cierta rotación.","d) Bloquean completamente la rotación."], answer: "c"},
+      {q: "¿Qué adaptación estructural presentan las vértebras lumbares para soportar las mayores cargas de la columna vertebral?", options:["a) Apófisis espinosas largas y delgadas.","b) Cuerpos vertebrales de mayor tamaño.","c) Agujeros vertebrales grandes y circulares.","d) Apófisis transversas con forámenes."], answer: "b"},
+      {q: "¿Cuál es la importancia clínica del promontorio del sacro?", options:["a) Es un punto de referencia para medir la curvatura de la columna.","b) Forma la articulación sacroilíaca.","c) Es donde se articula el coxis.","d) Aloja la médula espinal."], answer: "a"},
+      {q: "¿Qué función biomecánica tienen los discos intervertebrales además de amortiguar los impactos?", options:["a) Permiten la rotación axial de la columna.","b) Distribuyen las cargas a lo largo de la columna vertebral.","c) Protegen la médula espinal.","d) Facilitan la flexión lateral exclusiva."], answer: "b"},
+      {q: "¿Cómo se relaciona el tamaño de los cuerpos vertebrales con la función de la columna vertebral?", options:["a) Disminuyen de tamaño de cefálico a caudal para mayor flexibilidad.","b) Aumentan de tamaño de cefálico a caudal para soportar más peso.","c) Son uniformes en tamaño para distribuir el peso equitativamente.","d) Varían según la curvatura de la columna."], answer: "b"},
+      {q: "¿Cuántas vértebras forman la columna vertebral en total (aproximadamente)?", options:["a) 24-26","b) 30-31","c) 32-33","d) 35-36"], answer: "c"},
+      {q: "¿Cuál es la dirección de la concavidad en las curvaturas fisiológicas de la columna dorsal y sacrocoxígea?", options:["a) Anterior","b) Posterior","c) Lateral","d) No tienen concavidad"], answer: "a"},
+      {q: "¿Qué estructura conecta el cuerpo vertebral con el arco vertebral?", options:["a) Lámina","b) Pedículo","c) Apófisis transversa","d) Apófisis articular"], answer: "b"},
+      {q: "¿Cuál es la función principal de las apófisis espinosas?", options:["a) Articulación con las costillas","b) Inserción de músculos y ligamentos","c) Protección de la médula espinal","d) Permitir la rotación de la columna"], answer: "b"},
+      {q: "¿Qué estructura pasa a través del foramen transversario de las vértebras cervicales?", options:["a) Nervio espinal","b) Arteria vertebral","c) Médula espinal","d) Vena yugular"], answer: "b"},
+      {q: "¿Cuál es el nombre de la articulación entre las vértebras?", options:["a) Articulación sinovial","b) Articulación intervertebral","c) Articulación facetaria","d) Ambas b y c"], answer: "d"},
+      {q: "¿Qué tipo de cartílago forma el disco intervertebral?", options:["a) Cartílago hialino","b) Cartílago elástico","c) Cartílago fibroso","d) Cartílago articular"], answer: "c"},
+      {q: "¿Qué parte del disco intervertebral contiene el núcleo pulposo?", options:["a) Anillo fibroso","b) Lámina vertebral","c) Cuerpo vertebral","d) Pedículo"], answer: "a"},
+      {q: "¿Qué componente adicional se considera al evaluar la escoliosis además de la curvatura lateral?", options:["a) La lordosis","b) La rotación vertebral","c) La cifosis","d) La altura del disco intervertebral"], answer: "b"},
+      {q: "¿Cuál es la principal limitación del método de Ferguson en la evaluación de la escoliosis en comparación con el método de Cobb?", options:["a) El método de Ferguson no puede medir la curvatura en grados.","b) El método de Ferguson solo evalúa la región lumbar.","c) El método de Ferguson requiere proyecciones radiográficas especiales.","d) El método de Ferguson no considera la curvatura sagital."], answer: "d"},
+      {q: "¿Qué característica radiológica es clave para identificar la cifosis?", options:["a) Una desviación lateral de la columna.","b) Un aumento en la concavidad anterior de la columna dorsal.","c) Una reducción en la altura de los cuerpos vertebrales.","d) Una rotación anormal de las vértebras lumbares."], answer: "b"},
+      {q: "¿Qué tipo de curvatura anormal es la lordosis?", options:["a) Exageración de la curvatura dorsal","b) Desviación lateral de la columna","c) Exageración de la curvatura lumbar","d) Reducción de la curvatura cervical"], answer: "c"},
+      {q: "¿Cuál de las siguientes condiciones implica la compresión de la médula espinal?", options:["a) Escoliosis","b) Cifosis","c) Estenosis espinal","d) Espondilolistesis"], answer: "c"},
+      {q: "¿Qué condición se caracteriza por el deslizamiento de una vértebra sobre la vértebra inferior?", options:["a) Estenosis espinal","b) Espondilolistesis","c) Hernia de disco","d) Escoliosis"], answer: "b"},
+      {q: "¿Qué causa común puede contribuir a la estenosis espinal?", options:["a) Traumatismo agudo","b) Degeneración por la edad","c) Infecciones bacterianas","d) Malformaciones congénitas"], answer: "b"},
+      {q: "¿Cuál de las siguientes no es una causa común de escoliosis?", options:["a) Idiopática","b) Congénita","c) Degenerativa","d) Traumatismo agudo"], answer: "d"},
+      {q: "¿Qué región de la columna se ve más comúnmente afectada por la hernia de disco?", options:["a) Cervical y torácica","b) Torácica y lumbar","c) Lumbar y sacra","d) Cervical y lumbar"], answer: "d"},
+      {q: "¿Qué factor de riesgo está más asociado con la osteoporosis y las fracturas vertebrales por compresión?", options:["a) Obesidad","b) Tabaquismo","c) Edad avanzada","d) Sedentarismo"], answer: "c"},
+      {q: "¿Por qué es crucial la correcta alineación del paciente en la proyección AP de la columna cervical?", options:["a) Para minimizar la dosis de radiación al paciente.","b) Para evitar la superposición de estructuras como la mandíbula y el cráneo.","c) Para visualizar claramente los agujeros intervertebrales.","d) Para evaluar la flexibilidad de la columna cervical."], answer: "b"},
+      {q: "¿Qué ventaja ofrece la proyección lateral de la columna cervical en flexión y extensión?", options:["a) Permite una visualización óptima de las fracturas vertebrales.","b) Evalúa la integridad de los ligamentos y la estabilidad de la columna.","c) Reduce la exposición a la radiación en comparación con las proyecciones estándar.","d) Mide con precisión el grado de escoliosis."], answer: "b"},
+      {q: "¿Cómo se ajusta la angulación del rayo en las proyecciones oblicuas de la columna cervical y por qué?", options:["a) Se angula 45 grados para visualizar las articulaciones facetarias.","b) Se angula 15 grados para \"abrir\" los agujeros intervertebrales.","c) No se angula el rayo en estas proyecciones.","d) Se angula 90 grados para obtener una vista lateral verdadera."], answer: "b"},
+      {q: "¿Qué principio es fundamental al realizar radiografías de columna cervical en pacientes con traumatismo?", options:["a) Maximizar la flexión del cuello para una mejor visualización.","b) Retirar el collarín para obtener imágenes claras.","c) Mantener el cuello en posición neutra y minimizar el movimiento.","d) Realizar proyecciones oblicuas para descartar fracturas."], answer: "c"},
+      {q: "¿Cuándo es particularmente útil la proyección lateral del nadador (Twining)?", options:["a) Para visualizar la columna lumbar en pacientes obesos.","b) Para evaluar la alineación de la columna en pacientes con escoliosis severa.","c) Para visualizar la unión cervicotorácica cuando los hombros interfieren.","d) Para detectar pequeñas fracturas en las vértebras cervicales superiores."], answer: "c"},
+      {q: "¿Qué consideraciones especiales se deben tener en cuenta al realizar proyecciones AP de la columna dorsal?", options:["a) La curvatura de la columna y la superposición del mediastino.","b) La necesidad de inmovilizar completamente al paciente.","c) El uso de bajas dosis de radiación para proteger los órganos internos.","d) La angulación del rayo para corregir la lordosis dorsal."], answer: "a"},
+      {q: "¿Cuál es el propósito de flexionar las piernas del paciente al realizar una proyección AP de la columna dorsal?", options:["a) Reducir la lordosis lumbar","b) Aumentar la cifosis dorsal","c) Mejorar la visualización de los discos intervertebrales","d) Disminuir la dosis de radiación"], answer: "a"},
+      {q: "En la proyección lateral de la columna dorsal, ¿cuál es la posición del paciente?", options:["a) Decúbito supino","b) Decúbito prono","c) Decúbito lateral","d) Bipedestación"], answer: "c"},
+      {q: "¿Qué estructuras se evalúan mejor en las proyecciones oblicuas de la columna lumbar?", options:["a) Cuerpos vertebrales","b) Apófisis espinosas","c) Articulaciones facetarias","d) Discos intervertebrales"], answer: "c"},
+      {q: "¿Qué técnica se utiliza para reducir la dosis de radiación al paciente en las proyecciones de columna?", options:["a) Aumentar el tiempo de exposición","b) Usar colimación adecuada","c) Reducir la distancia foco-película","d) Usar baja kilovoltaje"], answer: "b"},
+      {q: "¿Qué proyección radiológica es más útil para evaluar la espondilolistesis?", options:["a) AP de columna lumbar","b) Lateral de columna lumbar","c) Oblicua de columna lumbar","d) Flexión-extensión lateral de columna lumbar"], answer: "b"},
+      {q: "¿Cuál es el punto de centrado del rayo en la proyección AP de la columna lumbar?", options:["a) Apófisis xifoides","b) Cresta ilíaca","c) Sínfisis púbica","d) Promontorio sacro"], answer: "b"},
+      {q: "¿Qué se busca evaluar con las proyecciones de flexión y extensión de la columna lumbar?", options:["a) Grado de escoliosis","b) Estabilidad de la columna","c) Altura de los discos intervertebrales","d) Presencia de fracturas"], answer: "b"},
+      {q: "¿Qué estructura anatómica es crucial para la estabilidad de la columna vertebral?", options:["a) Apófisis espinosa","b) Disco intervertebral","c) Apófisis transversa","d) Lámina vertebral"], answer: "b"},
+      {q: "¿Cuál de las siguientes afirmaciones sobre la radiografía de columna es correcta?", options:["a) Siempre requiere contraste","b) Es el método inicial para evaluar traumatismos","c) No detecta fracturas","d) No muestra la alineación de la columna"], answer: "b"}
+    ],
+  "RM 1": [
+    {q: "¿Qué principio físico fundamental relaciona la frecuencia de precesión de un átomo con el campo magnético en la Resonancia Magnética (RM)?", options: ["a) Ley de Ohm", "b) Ley de Faraday", "c) Ecuación de Larmor", "d) Principio de Arquímedes"], answer: "c"},
+    {q: "¿Cuál de los siguientes componentes es esencial para generar el campo magnético estático en un equipo de RM?", options: ["a) Sistema de gradiente", "b) Sistema de radiofrecuencia", "c) Imán", "d) Mesa del paciente"], answer: "c"},
+    {q: "¿Qué función principal desempeña el sistema de gradiente en un equipo de RM?", options: ["a) Generar pulsos de radiofrecuencia", "b) Detectar la señal de los tejidos", "c) Crear variaciones espaciales del campo magnético", "d) Controlar la temperatura del imán"], answer: "c"},
+    {q: "¿Cuál es el propósito de la parte de radiofrecuencia en un equipo de RM?", options: ["a) Generar el campo magnético estático", "b) Codificar la imagen de RM", "c) Excitar la muestra y recoger la señal", "d) Regular la homogeneidad del campo"], answer: "c"},
+    {q: "¿Qué tipo de imán para RM utiliza materiales con propiedades magnéticas permanentes?", options: ["a) Electroimán resistivo", "b) Electroimán superconductor", "c) Imán permanente", "d) Imán abierto"], answer: "c"},
+    {q: "¿Cuál es una limitación principal de los imanes permanentes en RM?", options: ["a) Alto consumo de energía", "b) Necesidad de criógenos", "c) Limitación en la potencia del campo magnético", "d) Inestabilidad del campo magnético"], answer: "c"},
+    {q: "¿Cómo generan un campo magnético los electroimanes en RM?", options: ["a) Mediante materiales ferromagnéticos", "b) Mediante el flujo de corriente eléctrica", "c) Mediante reacciones químicas", "d) Mediante ondas de radiofrecuencia"], answer: "b"},
+    {q: "¿Qué tipo de electroimán en RM requiere sistemas de refrigeración para su funcionamiento?", options: ["a) Electroimán superconductor", "b) Electroimán permanente", "c) Electroimán resistivo", "d) Imán abierto"], answer: "c"},
+    {q: "¿Qué distingue a los imanes superconductores de los resistivos en RM?", options: ["a) Mayor resistencia al flujo de corriente", "b) Necesidad de criógenos", "c) Menor coste de operación", "d) Capacidad de operar a temperatura ambiente"], answer: "b"},
+    {q: "¿Cuál es el fenómeno conocido como \"QUENCH\" en los imanes superconductores de RM?", options: ["a) Un aumento en la intensidad del campo magnético", "b) La súbita pérdida de superconductividad y del campo magnético", "c) Un proceso de enfriamiento del imán", "d) La estabilización del campo magnético"], answer: "b"},
+    {q: "¿Qué ventaja principal ofrecen los imanes superconductores en RM?", options: ["a) Bajo coste de adquisición", "b) Funcionamiento sin criógenos", "c) Capacidad para generar campos magnéticos muy elevados", "d) Simplicidad en su construcción"], answer: "c"},
+    {q: "¿Qué configuración física caracteriza a los imanes abiertos en RM?", options: ["a) Un solenoide cilíndrico", "b) Dos imanes paralelos uno sobre otro", "c) Una espiral de cable enrollada", "d) Un arreglo de herradura"], answer: "b"},
+    {q: "¿Qué tipo de imán en RM está formado por solenoides?", options: ["a) Imán permanente", "b) Imán abierto", "c) Imán cerrado", "d) Imán resistivo"], answer: "c"},
+    {q: "¿Cuál es la propiedad más importante al definir un equipo de RM?", options: ["a) Homogeneidad del campo magnético", "b) Intensidad del campo magnético", "c) Velocidad de los gradientes", "d) Linealidad de los gradientes"], answer: "b"},
+    {q: "¿Cómo influye una mayor intensidad del campo magnético en la relación señal-ruido (SNR) en RM?", options: ["a) Disminuye la SNR", "b) Aumenta la SNR", "c) No afecta la SNR", "d) Aumenta el ruido"], answer: "b"},
+    {q: "¿En qué unidad se mide la homogeneidad del campo magnético en RM?", options: ["a) Tesla (T)", "b) Militesla por metro (mT/m)", "c) Partes por millón (ppm)", "d) Hercio (Hz)"], answer: "c"},
+    {q: "¿Cuál es el propósito principal de los sistemas de gradiente en RM?", options: ["a) Generar el campo magnético estático", "b) Producir variaciones lineales del campo magnético", "c) Transmitir pulsos de radiofrecuencia", "d) Recibir la señal de RM"], answer: "b"},
+    {q: "¿Cuántos gradientes de campo se requieren típicamente para la codificación espacial en RM?", options: ["a) Uno", "b) Dos", "c) Tres", "d) Cuatro"], answer: "c"},
+    {q: "¿Qué componente se utiliza para alimentar las bobinas de gradiente en RM?", options: ["a) Amplificadores de voltaje", "b) Amplificadores de corriente", "c) Transformadores", "d) Resistencias"], answer: "b"},
+    {q: "¿En qué unidad se mide la potencia de los gradientes en RM?", options: ["a) Tesla (T)", "b) Partes por millón (ppm)", "c) Militesla por metro (mT/m)", "d) Militesla por segundo (mT/s)"], answer: "c"},
+    {q: "¿Qué ventaja proporciona una mayor potencia de gradiente en RM?", options: ["a) Tiempos de eco y repetición más largos", "b) Lectura más rápida de los ecos", "c) Menor calidad en imágenes de difusión", "d) Mayor tiempo de adquisición total"], answer: "b"},
+    {q: "¿En qué unidad se mide la velocidad de la gradiente en RM?", options: ["a) Tesla (T)", "b) Militesla por metro (mT/m)", "c) Partes por millón (ppm)", "d) Militesla por metro por segundo (mT/m/s)"], answer: "d"},
+    {q: "¿Qué limita la potencia y velocidad de los gradientes en RM?", options: ["a) El coste del equipo", "b) La temperatura del imán", "c) La estimulación de los nervios periféricos", "d) La linealidad de los gradientes"], answer: "c"},
+    {q: "¿Qué consecuencia tiene la no linealidad de los gradientes en la imagen de RM?", options: ["a) Mejora la relación señal-ruido", "b) Reduce los tiempos de adquisición", "c) Produce distorsiones geométricas", "d) Aumenta la homogeneidad del campo"], answer: "c"},
+    {q: "¿Qué sistema del equipo de RM envía los pulsos de excitación y recibe la señal?", options: ["a) Sistema de gradiente", "b) Sistema de radiofrecuencia", "c) Sistema de control", "d) Sistema de imán"], answer: "b"},
+    {q: "¿Qué componente del sistema de radiofrecuencia transmite los pulsos de excitación?", options: ["a) Bobina de recepción", "b) Amplificador de corriente", "c) Bobina de excitación", "d) Receptor de señal"], answer: "c"},
+    {q: "¿Qué forma característica tiene la bobina de excitación en RM?", options: ["a) Espiral", "b) Solenoide", "c) Jaula de pájaro", "d) Plana"], answer: "c"},
+    {q: "¿Qué ley física explica la generación de corriente en la bobina de recepción por la variación del flujo electromagnético?", options: ["a) Ley de Ohm", "b) Ley de Faraday", "c) Ley de Lenz", "d) Ley de Coulomb"], answer: "b"},
+    {q: "¿Cómo varía la intensidad de la señal de RM con la distancia a la bobina de recepción?", options: ["a) Linealmente", "b) Exponencialmente", "c) Inversamente proporcional al cuadrado de la distancia", "d) No varía con la distancia"], answer: "c"},
+    {q: "¿Qué tipo de bobina de radiofrecuencia ofrece mejor homogeneidad de la señal dentro del volumen?", options: ["a) Bobina de superficie", "b) Bobina acoplada en fase", "c) Bobina volumétrica", "d) Bobina de gradiente"], answer: "c"},
+    {q: "¿Qué ventaja principal ofrecen las bobinas de superficie en RM?", options: ["a) Mejor homogeneidad de la señal", "b) Mayor señal-ruido en regiones profundas", "c) Mayor versatilidad y adaptación anatómica", "d) Menor sensibilidad a la distancia"], answer: "c"},
+    {q: "¿Qué son las bobinas acopladas en fase (\"phased array\") en RM?", options: ["a) Bobinas volumétricas de alta potencia", "b) Combinación de bobinas de superficie para mayor cobertura", "c) Bobinas de excitación especializadas", "d) Bobinas de gradiente de alta linealidad"], answer: "b"},
+    {q: "¿Qué sistema de un equipo de RM gestiona tanto los gradientes como la radiofrecuencia y la mesa del paciente?", options: ["a) Sistema de adquisición de datos", "b) Sistema de reconstrucción de imagen", "c) Sistema de control", "d) Sistema de almacenamiento de datos"], answer: "c"},
+    {q: "¿Cuál es una función clave del sistema de control en RM?", options: ["a) Generar el campo magnético estático", "b) Crear variaciones lineales del campo", "c) Organizar los pulsos de gradiente y radiofrecuencia", "d) Amplificar la señal de los tejidos"], answer: "c"},
+    {q: "¿Qué propiedad intrínseca de los protones y neutrones se explota en RM para generar la señal?", options: ["a) Carga eléctrica", "b) Momento dipolar", "c) Espín", "d) Velocidad de traslación"], answer: "c"},
+    {q: "¿Qué núcleo atómico es más comúnmente utilizado en RM y por qué?", options: ["a) Carbono-13, por su abundancia", "b) Oxígeno-16, por su alta señal", "c) Hidrógeno-1, por su abundancia en el organismo", "d) Nitrógeno-14, por su estabilidad"], answer: "c"},
+    {q: "¿Qué tipo de movimiento realizan los protones bajo la influencia de un campo magnético en RM?", options: ["a) Traslación", "b) Rotación", "c) Precesión", "d) Vibración"], answer: "c"},
+    {q: "¿Qué relación describe la frecuencia de precesión de los protones en un campo magnético?", options: ["a) Inversamente proporcional a la intensidad del campo", "b) Directamente proporcional a la intensidad del campo", "c) Independiente de la intensidad del campo", "d) Exponencialmente proporcional a la intensidad del campo"], answer: "b"},
+    {q: "¿Qué proceso describe la relajación T1 en RM?", options: ["a) Pérdida de coherencia de fase de los protones", "b) Retorno de los protones a su estado de baja energía", "c) Transferencia de energía de los protones al entorno molecular", "d) Movimiento de precesión de los protones"], answer: "c"},
+    {q: "¿Qué factor principal influye en el tiempo de relajación T1 de un tejido?", options: ["a) Densidad de protones", "b) Intensidad del campo magnético aplicado", "c) Interacciones de las moléculas de agua con el entorno", "d) Velocidad de flujo sanguíneo"], answer: "c"}
+  ],
+  "RM 2": [
+    {q: "¿Cuál es la consecuencia principal de la aplicación de gradientes en la Resonancia Magnética (RM) sobre la frecuencia de precesión de los protones?", options: ["a) Homogeneización de la frecuencia de precesión en todo el volumen.", "b) Variación de la frecuencia de precesión de los protones en función de su posición espacial.", "c) Aumento uniforme de la frecuencia de precesión de todos los protones.", "d) Independencia de la frecuencia de precesión respecto al campo magnético."], answer: "b"},
+    {q: "En la RM, ¿qué parámetros determinan el grosor del corte seleccionado?", options: ["a) La intensidad del campo magnético principal y la frecuencia de los pulsos de RF.", "b) El tiempo de repetición (TR) y el tiempo de eco (TE).", "c) El ancho de banda de emisión del pulso de radiofrecuencia y la amplitud del gradiente de corte.", "d) Los gradientes de codificación de fase y frecuencia."], answer: "c"},
+    {q: "¿Qué función cumplen los gradientes de codificación de fase en la formación de la imagen de RM?", options: ["a) Seleccionar el corte en el plano axial.", "b) Variar el campo magnético en la dirección del corte para codificar la posición espacial.", "c) Codificar la frecuencia de la señal de RM.", "d) Compensar las inhomogeneidades del campo magnético."], answer: "b"},
+    {q: "¿Cómo influye la intensidad del gradiente de codificación de fase en la información obtenida en la imagen de RM?", options: ["a) Las codificaciones de fase altas proporcionan información sobre el contraste, mientras que las bajas sobre el detalle.", "b) Las codificaciones de fase altas proporcionan información sobre la potenciación T1, y las bajas sobre la T2.", "c) Las codificaciones de fase altas proporcionan información sobre el detalle, y las bajas sobre el contraste.", "d) La intensidad del gradiente de fase no influye en la información de la imagen."], answer: "c"},
+    {q: "¿Qué representa el espacio K en la Resonancia Magnética?", options: ["a) El espacio físico dentro del escáner donde se ubica el paciente.", "b) Un espacio virtual donde se almacenan las señales de RM digitalizadas.", "c) La matriz de la imagen reconstruida.", "d) El conjunto de bobinas de gradiente."], answer: "b"},
+    {q: "¿Cuál es el propósito del \"manejo del espacio K\" en RM?", options: ["a) Ajustar la intensidad del campo magnético principal.", "b) Modificar los gradientes para mejorar la linealidad.", "c) Implementar métodos para adquirir menos ecos y reducir el tiempo de exploración.", "d) Corregir artefactos de susceptibilidad magnética."], answer: "c"},
+    {q: "En la adquisición reducida con píxel rectangular, ¿qué ocurre con los píxeles de la imagen?", options: ["a) Permanecen cuadrados, pero se reduce la resolución espacial.", "b) Se estiran, aumentando la relación señal/ruido.", "c) Se rellenan con ceros las líneas no obtenidas del espacio K.", "d) Disminuye el tamaño de la imagen final."], answer: "b"},
+    {q: "¿Qué artefacto es característico de la utilización de un FOV rectangular en RM?", options: ["a) Artefacto de Gibbs.", "b) Artefacto de susceptibilidad.", "c) Artefacto de movimiento.", "d) Artefacto de solapamiento o fold-over."], answer: "d"},
+    {q: "¿Cuál es el fundamento de la técnica de Fourier parcial o halfscan en RM?", options: ["a) Adquirir solo la mitad de los ecos en el tiempo de eco.", "b) Adquirir la mitad del espacio K y calcular el resto aprovechando la simetría.", "c) Rellenar el espacio K con ceros para reducir el tiempo de exploración.", "d) Adquirir solo las líneas centrales del espacio K."], answer: "b"},
+    {q: "¿En qué tipo de estudios de RM se utiliza preferentemente la técnica Keyholer?", options: ["a) Estudios de difusión.", "b) Estudios estáticos de alta resolución.", "c) Estudios dinámicos con administración de gadolinio.", "d) Estudios de perfusión cerebral."], answer: "c"},
+    {q: "¿Cuál es el principal objetivo de las técnicas de adquisición en paralelo en RM?", options: ["a) Aumentar el contraste entre tejidos.", "b) Acelerar la adquisición de la imagen o aumentar la resolución.", "c) Reducir los artefactos de susceptibilidad.", "d) Mejorar la homogeneidad del campo magnético."], answer: "b"},
+    {q: "¿Qué tipo de antena es imprescindible para la implementación de las técnicas de adquisición en paralelo?", options: ["a) Antena de volumen.", "b) Antena de superficie.", "c) Antena acoplada en fase (phased array).", "d) Antena de gradiente."], answer: "c"},
+    {q: "¿En qué se basa la técnica SENSE (SENSitivity Encoding) para la adquisición en paralelo?", options: ["a) En la codificación de la sensibilidad de los tejidos.", "b) En la reconstrucción de la imagen a partir de una imagen con artefacto de aliasing.", "c) En la manipulación de los gradientes de frecuencia.", "d) En la adquisición de datos con múltiples tiempos de eco."], answer: "b"},
+    {q: "¿Qué parámetro determina el grado de reducción del tiempo de exploración en la técnica SENSE?", options: ["a) El tiempo de repetición (TR).", "b) El tiempo de eco (TE).", "c) El número de elementos de la antena acoplada en fase (factor R).", "d) El ancho de banda de emisión."], answer: "c"},
+    {q: "¿Cuál es el principio fundamental de la técnica SMASH (SiMultaneus Acquisition of Spatial Harmonics)?", options: ["a) La reconstrucción iterativa de la imagen.", "b) La adquisición simultánea de múltiples ecos de espín.", "c) La utilización de los mapas de sensibilidad de cada antena para generar varias líneas del espacio K cada vez.", "d) La supresión de la señal de la grasa en la imagen."], answer: "c"},
+    {q: "En las secuencias de RM, ¿qué parámetros son fundamentales para controlar el contraste de la imagen?", options: ["a) La intensidad del campo magnético y la frecuencia de los pulsos de RF.", "b) El tiempo de repetición (TR) y el tiempo de eco (TE).", "c) Los gradientes de selección de corte y codificación de fase.", "d) El número de adquisiciones y el factor de aliasing."], answer: "b"},
+    {q: "¿Qué caracteriza a las secuencias de eco de espín en RM?", options: ["a) La utilización de pulsos de excitación de 90° y pulsos de refaseo de 180°.", "b) La ausencia de pulsos de 180°.", "c) La inversión de la magnetización longitudinal antes de la excitación.", "d) La adquisición de la señal en estado estacionario."], answer: "a"},
+    {q: "¿Cuál es la principal aplicación de una secuencia de eco de espín monoeco?", options: ["a) Obtener imágenes potenciadas en T2.", "b) Obtener imágenes potenciadas en densidad protónica.", "c) Obtener imágenes potenciadas en T1.", "d) Suprimir la señal de la grasa."], answer: "b"},
+    {q: "En una secuencia de eco de espín múltiple eco, ¿qué información proporcionan los ecos obtenidos con tiempos de eco cortos y largos, respectivamente?", options: ["a) Los ecos cortos proporcionan información sobre la potenciación T2, y los largos sobre la potenciación T1.", "b) Los ecos cortos proporcionan información sobre la densidad protónica, y los largos sobre la potenciación T2.", "c) Ambos ecos proporcionan información sobre la potenciación T1.", "d) Ambos ecos proporcionan información sobre la densidad protónica."], answer: "b"},
+    {q: "¿Qué distingue a las secuencias turbo o fast eco de espín (TSE) de las secuencias de eco de espín convencionales?", options: ["a) La utilización de un único pulso de 180° para generar un eco.", "b) La aplicación de múltiples pulsos de 180° para obtener varios ecos y rellenar múltiples líneas del espacio K por excitación.", "c) La inversión de la magnetización antes de la adquisición de la señal.", "d) La adquisición de solo la mitad del espacio K."], answer: "b"},
+    {q: "¿Qué implica el término \"single shot\" en las secuencias TSE-SS?", options: ["a) La adquisición de una sola imagen en todo el estudio.", "b) La adquisición de todo el espacio K tras un único pulso de excitación.", "c) La utilización de un solo pulso de 180° para generar el eco.", "d) La adquisición de la imagen en un solo corte."], answer: "b"},
+    {q: "¿Por qué las secuencias TSE-SS tienen una fuerte potenciación T2?", options: ["a) Porque utilizan tiempos de repetición cortos.", "b) Porque el tiempo de eco es necesariamente muy largo.", "c) Porque se adquiere solo la mitad del espacio K.", "d) Porque se anula la señal de los líquidos."], answer: "b"},
+    {q: "¿Qué ventaja ofrece la secuencia HASTE en comparación con la TSE-SS?", options: ["a) Mayor potenciación T1.", "b) Adquisición más rápida al adquirir solo la mitad del espacio K.", "c) Menor sensibilidad a los artefactos de movimiento.", "d) Capacidad para suprimir la señal de la grasa."], answer: "c"},
+    {q: "¿Cuál es la característica principal de las secuencias de inversión-recuperación?", options: ["a) La ausencia de pulsos de 180°.", "b) La aplicación de un pulso de 180° previo al pulso de excitación.", "c) La adquisición de la señal en estado estacionario.", "d) La utilización de gradientes bipolares."], answer: "b"},
+    {q: "¿Qué determina el tiempo de inversión (TI) en las secuencias de inversión-recuperación?", options: ["a) El tiempo entre pulsos de excitación sucesivos.", "b) El tiempo entre el pulso de excitación y la adquisición del eco.", "c) El momento en que comienza la secuencia de imagen eco de espín tras la inversión.", "d) La duración del pulso de radiofrecuencia."], answer: "c"},
+    {q: "¿Qué tejido se suprime selectivamente en la secuencia STIR?", options: ["a) El agua.", "b) La grasa.", "c) El músculo.", "d) El hueso."], answer: "b"},
+    {q: "¿Cuál es el objetivo de la secuencia FLAIR?", options: ["a) Suprimir la señal de la grasa.", "b) Suprimir la señal de los líquidos, como el LCR.", "c) Potenciar la señal de los tejidos con T1 corto.", "d) Potenciar la señal de los tejidos con T2 largo."], answer: "b"},
+    {q: "¿Cuál es una limitación común de las secuencias de inversión-recuperación?", options: ["a) Baja relación señal/ruido.", "b) Sensibilidad a los artefactos de movimiento.", "c) Largo tiempo de adquisición.", "d) Incapacidad para suprimir la señal de la grasa."], answer: "c"},
+    {q: "En las secuencias gradiente eco, ¿qué se utiliza para generar el eco en lugar de un pulso de 180°?", options: ["a) Un pulso de excitación de 90°.", "b) Un gradiente de refase.", "c) Un pulso de inversión de 180°.", "d) Un tiempo de eco corto."], answer: "b"},
+    {q: "¿Qué caracteriza a las secuencias gradiente eco en estado estacionario?", options: ["a) La completa relajación de la magnetización antes del siguiente pulso.", "b) La adquisición de la señal antes de que se produzca la relajación completa.", "c) La supresión de la magnetización transversal.", "d) La utilización de pulsos de 180° para generar el eco."], answer: "b"},
+    {q: "¿Qué secuencias se incluyen dentro de las secuencias gradiente eco en estado estacionario?", options: ["a) FLASH y SPGR.", "b) FISP, GRASS y True FISP.", "c) STIR y FLAIR.", "d) EPI y HASTE."], answer: "b"},
+    {q: "¿Qué diferencia a las secuencias FISP, GRASS y True FISP de las secuencias FLASH y SPGR?", options: ["a) La utilización de tiempos de repetición largos.", "b) La potenciación T1.", "c) La potenciación T2*.", "d) La supresión de la grasa."], answer: "c"},
+    {q: "¿Qué significa \"eco planar\" en las secuencias EPI?", options: ["a) La adquisición de la señal en un plano perpendicular al campo magnético.", "b) La generación del eco mediante un pulso de 180°.", "c) La adquisición de múltiples ecos tras un único pulso de excitación.", "d) La supresión de los artefactos de susceptibilidad."], answer: "c"},
+    {q: "¿Cuál es una ventaja principal de las secuencias EPI?", options: ["a) Alta resolución espacial.", "b) Rapidez de adquisición.", "c) Baja sensibilidad a los artefactos de movimiento.", "d) Excelente potenciación T1."], answer: "b"},
+    {q: "¿En qué tipo de estudios se utilizan comúnmente las secuencias EPI?", options: ["a) Estudios de alta resolución anatómica.", "b) Estudios de perfusión y difusión.", "c) Estudios de caracterización tisular.", "d) Estudios con supresión de la grasa."], answer: "b"},
+    {q: "¿Qué problema presentan las secuencias EPI y qué técnicas se utilizan para mitigarlo?", options: ["a) Artefactos de Gibbs; se mitigan con filtros de suavizado.", "b) Artefactos de susceptibilidad; se mitigan con técnicas de adquisición en paralelo y secuencias TSE.", "c) Artefactos de movimiento; se mitigan con secuencias rápidas y técnicas de saturación.", "d) Artefactos de aliasing; se mitigan con FOV rectangular."], answer: "b"},
+    {q: "¿Qué es la potenciación de una imagen de RM?", options: ["a) El aumento de la intensidad de la señal.", "b) El control del contraste de la imagen mediante los parámetros de la secuencia.", "c) La corrección de los artefactos de la imagen.", "d) La aplicación de filtros para mejorar la resolución espacial."], answer: "b"},
+    {q: "¿Qué parámetro de la secuencia de RM controla principalmente la potenciación T1?", options: ["a) El tiempo de eco (TE).", "b) El tiempo de repetición (TR).", "c) El tiempo de inversión (TI).", "d) El ángulo de flip."], answer: "b"},
+    {q: "¿Qué relación existe entre el tiempo de repetición (TR) y la potenciación T1 en las imágenes de Resonancia Magnética?", options: ["a) Un TR corto resulta en una potenciación T1, mientras que un TR largo resulta en potenciación T2.", "b) Un TR largo resulta en una potenciación T1, mientras que un TR corto resulta en potenciación T2.", "c) El TR no influye en la potenciación T1.", "d) El TR solo afecta al brillo de la imagen, no a la potenciación."], answer: "a"},
+    {q: "¿Cuál es el efecto del tiempo de eco (TE) en la potenciación T2 en las imágenes de Resonancia Magnética?", options: ["a) Un TE corto potencia las imágenes en T2, mientras que un TE largo las potencia en T1.", "b) Un TE largo potencia las imágenes en T2, mientras que un TE corto las potencia en densidad protónica.", "c) El TE no tiene influencia en la potenciación T2.", "d) El TE determina la resolución espacial de la imagen."], answer: "b"}
+  ],
+"RM 3": [
+{q: "En la espectroscopia por RM (ERM) de protón (¹H), ¿qué metabolito se identifica por un pico a 3.01 ppm?", options: ["A) Lactato (Lac)", "B) Creatina (Cr)", "C) N-acetil-aspartato (NAA)", "D) Colina (Cho)"], answer: "B"},
+{q: "¿Cuál de los siguientes metabolitos en ERM de ¹H aparece únicamente en condiciones patológicas?", options: ["A) N-acetil-aspartato (NAA)", "B) Lactato (Lac)", "C) Creatina (Cr)", "D) Mioinositol (ml)"], answer: "B"},
+{q: "La técnica de angiografía por RM (ARM) que utiliza el desfase de protones en movimiento según su velocidad es:", options: ["A) TOF (tiempo de vuelo)", "B) PC (contraste de fase)", "C) Realce con gadolinio", "D) STIR"], answer: "B"},
+{q: "En la técnica TOF con 'sangre negra', ¿por qué la luz del vaso aparece vacía en la imagen?", options: ["A) Por saturación del tejido estático", "B) Porque la sangre no recibe el pulso de 180° necesario para el eco", "C) Por el efecto paramagnético del gadolinio", "D) Por la supresión de grasa"], answer: "B"},
+{q: "¿Qué técnica de RM permite estudiar la dirección del movimiento del agua en los tejidos?", options: ["A) RM de difusión", "B) RM tractografía (DTI)", "C) Espectroscopia por RM", "D) RM funcional (fMRI)"], answer: "B"},
+{q: "¿En qué fase del ciclo menstrual se recomienda realizar una RM de mama para reducir falsos positivos?", options: ["A) Fase lútea (días 21-28)", "B) Fase folicular (días 7-14)", "C) Durante la ovulación", "D) En cualquier fase"], answer: "B"},
+{q: "¿Cuál es el principal efecto biológico de la radiofrecuencia en RM?", options: ["A) Inducción de corrientes eléctricas", "B) Depósito calórico (SAR)", "C) Alteración del ritmo cardíaco", "D) Cambios en la visión"], answer: "B"},
+{q: "¿Qué tipo de imán genera campos magnéticos más intensos en RM?", options: ["A) Imán permanente", "B) Imán resistivo", "C) Imán superconductor", "D) Imán híbrido"], answer: "C"},
+{q: "¿Cuál es una contraindicación absoluta para realizar una RM?", options: ["A) Prótesis valvular cardíaca", "B) Clip hemostático intracerebral ferromagnético", "C) Stent coronario", "D) Implante coclear moderno compatible"], answer: "B"},
+{q: "En una secuencia spin-eco (SE) potenciada en T1, ¿qué combinación de TR y TE se utiliza?", options: ["A) TR largo y TE corto", "B) TR corto y TE corto", "C) TR largo y TE largo", "D) TR corto y TE largo"], answer: "B"},
+{q: "¿Qué técnica de RM se utiliza para localizar zonas elocuentes cerebrales antes de cirugía?", options: ["A) RM de difusión", "B) RM funcional (fMRI)", "C) Angiografía por RM (ARM)", "D) Espectroscopia por RM"], answer: "B"},
+{q: "¿Qué agente de contraste se usa comúnmente en RM para acortar el T1 de la sangre?", options: ["A) Yodo", "B) Gadolinio-DTPA", "C) Bario", "D) Tecnecio"], answer: "B"},
+{q: "¿Qué artefacto en RM se manifiesta en la dirección de codificación de frecuencia debido a diferencias químicas entre tejidos?", options: ["A) Artefacto Gibbs", "B) Desplazamiento químico", "C) Artefacto por movimiento", "D) Efecto magnetohidrodinámico"], answer: "B"},
+{q: "¿Qué secuencia se utiliza para suprimir la señal de la grasa en RM?", options: ["A) FLAIR", "B) STIR", "C) TOF", "D) DP"], answer: "B"},
+{q: "¿Qué parámetro en RM mide la inhomogeneidad del campo magnético?", options: ["A) Tesla (T)", "B) Partes por millón (ppm)", "C) Gauss (G)", "D) Hertzios (Hz)"], answer: "B"},
+{q: "¿Qué técnica de ARM muestra la sangre blanca independientemente de su velocidad?", options: ["A) TOF", "B) PC (contraste de fase)", "C) Realce con gadolinio", "D) STIR"], answer: "C"},
+{q: "¿Qué metabolito en ERM de ¹H es marcador de viabilidad neuronal?", options: ["A) Lactato (Lac)", "B) N-acetil-aspartato (NAA)", "C) Colina (Cho)", "D) Lípidos (Lip)"], answer: "B"},
+{q: "¿Qué plano cardíaco en RM se usa para evaluar el ventrículo izquierdo y la válvula mitral?", options: ["A) Plano transversal", "B) Plano coronal", "C) Plano de dos cámaras", "D) Plano eje corto"], answer: "C"},
+{q: "¿Qué efecto tiene un campo magnético estático en la sangre según la ley de Faraday?", options: ["A) Aumenta la presión arterial", "B) Genera corrientes inducidas", "C) Reduce la temperatura corporal", "D) Aumenta la frecuencia cardíaca"], answer: "B"},
+{q: "¿Qué secuencia de RM es útil para detectar edema o inflamación?", options: ["A) T1", "B) T2", "C) STIR", "D) DP"], answer: "C"},
+{q: "En RM cardíaca, ¿qué técnica sincroniza la adquisición con el movimiento del diafragma?", options: ["A) Sensor de respiración", "B) Navegador", "C) Electrocardiograma (ECG)", "D) Técnica de apnea"], answer: "B"},
+{q: "¿Qué tejido aparece hiperintenso en T1 e hipointenso en T2?", options: ["A) Líquido cefalorraquídeo (LCR)", "B) Grasa", "C) Músculo", "D) Hueso cortical"], answer: "B"},
+{q: "¿Qué técnica de ARM permite seleccionar arterias o venas?", options: ["A) TOF (tiempo de vuelo)", "B) PC (contraste de fase)", "C) Realce con gadolinio", "D) FLAIR"], answer: "A"},
+{q: "¿Qué componente del equipo de RM atenúa interferencias de radiofrecuencia externa?", options: ["A) Bobina de gradiente", "B) Jaula de Faraday", "C) Imán superconductor", "D) Antena de superficie"], answer: "B"},
+{q: "¿Qué valor de SAR (W/kg) se considera seguro para el cuerpo entero en RM?", options: ["A) < 0.4 W/kg", "B) < 1.0 W/kg", "C) < 8 W/kg", "D) < 10 W/kg"], answer: "A"},
+{q: "¿Qué secuencia se usa para suprimir el LCR en imágenes cerebrales?", options: ["A) T1", "B) T2", "C) FLAIR", "D) STIR"], answer: "C"},
+{q: "¿Qué técnica de RM mide la restricción al movimiento del agua en tejidos?", options: ["A) RM de difusión", "B) RM tractografía (DTI)", "C) Espectroscopia por RM", "D) RM funcional (fMRI)"], answer: "A"},
+{q: "¿Qué metabolito en ERM aumenta en tumores cerebrales?", options: ["A) Lactato (Lac)", "B) N-acetil-aspartato (NAA)", "C) Colina (Cho)", "D) Creatina (Cr)"], answer: "C"},
+{q: "¿Qué plano de RM cardíaca muestra ambos ventrículos en sección transversal?", options: ["A) Plano transversal", "B) Plano coronal", "C) Plano de dos cámaras", "D) Plano eje corto"], answer: "D"},
+{q: "¿Qué efecto tiene el gadolinio en el T1 de los tejidos?", options: ["A) Lo alarga", "B) Lo acorta", "C) No tiene efecto", "D) Lo invierte"], answer: "B"},
+{q: "¿Qué técnica de RM evita artefactos por movimiento respiratorio?", options: ["A) Sincronización cardíaca", "B) Sincronización respiratoria", "C) Supresión de grasa", "D) Técnica de apnea"], answer: "B"},
+{q: "¿Qué tipo de bobina se usa para mejorar la homogeneidad del campo magnético?", options: ["A) Bobina de gradiente", "B) Bobina cuadrática", "C) Antena de superficie", "D) Bobina de radiofrecuencia"], answer: "B"},
+{q: "¿Qué secuencia RM es sensible a hemorragias subagudas?", options: ["A) Spin-eco (SE)", "B) Eco de gradiente (GRE)", "C) FLAIR", "D) STIR"], answer: "B"},
+{q: "¿Qué parámetro define el tiempo de recuperación de la magnetización longitudinal?", options: ["A) T1", "B) T2", "C) T2*", "D) DP"], answer: "A"},
+{q: "¿Qué técnica de ARM usa el primer paso arterial del gadolinio?", options: ["A) TOF (tiempo de vuelo)", "B) PC (contraste de fase)", "C) Realce con gadolinio", "D) STIR"], answer: "C"},
+{q: "¿Qué estructura se visualiza mejor en RM que en TC?", options: ["A) Fosa posterior del cráneo", "B) Hueso cortical", "C) Pulmones", "D) Intestino delgado"], answer: "A"},
+{q: "¿Qué secuencia RM se usa para estudiar la sustancia blanca cerebral?", options: ["A) RM de difusión", "B) DTI (tractografía)", "C) Espectroscopia por RM", "D) RM funcional (fMRI)"], answer: "B"},
+{q: "¿Qué efecto tiene la metalemoglobina en secuencias GRE?", options: ["A) Hipointensa (oscura)", "B) Hiperintensa (brillante)", "C) Isointensa", "D) No visible"], answer: "B"},
+{q: "¿Qué técnica RM cuantifica flujo sanguíneo mediante desfase de protones?", options: ["A) TOF (tiempo de vuelo)", "B) PC (contraste de fase)", "C) Realce con gadolinio", "D) STIR"], answer: "B"},
+{q: "¿Qué metabolito en ERM es marcador de isquemia cerebral?", options: ["A) Lactato (Lac)", "B) N-acetil-aspartato (NAA)", "C) Colina (Cho)", "D) Creatina (Cr)"], answer: "A"}
+    ],
+    "Cráneo 1": [
+    { "q": "¿Cuál de las siguientes afirmaciones sobre el esqueleto de la cabeza es INCORRECTA?", "options": ["a) Está formado por el cráneo, los huesos faciales y la mandíbula.", "b) El cráneo se divide en bóveda y base.", "c) La articulación temporomandibular es una articulación fibrosa inmóvil.", "d) La bóveda del cráneo está formada por huesos planos unidos por suturas."], "answer": "c" },
+    { "q": "¿Qué huesos forman la parte superior de la bóveda del cráneo?", "options": ["a) Frontal y occipital.", "b) Parietales.", "c) Temporales.", "d) Esfenoides."], "answer": "b" },
+    { "q": "¿Cómo se llama el punto de unión entre la sutura coronal y la sutura sagital?", "options": ["a) Lambda.", "b) Bregma.", "c) Eminencia parietal.", "d) Línea temporal."], "answer": "b" },
+    { "q": "¿Cuál de las siguientes estructuras NO se encuentra en el hueso occipital?", "options": ["a) Foramen magno.", "b) Cóndilo occipital.", "c) Crista galli.", "d) Protuberancia occipital externa."], "answer": "c" },
+    { "q": "¿Qué huesos forman la pared de la bóveda craneana por debajo de los huesos frontal y parietal?", "options": ["a) Temporal y esfenoides.", "b) Occipital y temporal.", "c) Esfenoides y occipital.", "d) Parietal y temporal."], "answer": "a" },
+    { "q": "¿Cuál de las siguientes afirmaciones sobre la base del cráneo es correcta?", "options": ["a) La lámina perpendicular del etmoides separa la fosa posterior del cráneo de la cavidad nasal.", "b) La silla turca alberga la glándula pineal.", "c) El surco quiasmático conduce el nervio olfatorio.", "d) El esfenoides presenta alas menores por delante y alas mayores por detrás."], "answer": "d" },
+    { "q": "¿Qué estructura del esfenoides aloja la glándula hipófisis o pituitaria?", "options": ["a) Crista esfenoidal.", "b) Silla turca.", "c) Tubérculo pituitario.", "d) Surco quiasmático."], "answer": "b" },
+    { "q": "¿Cuál de las siguientes estructuras NO forma parte del hueso temporal?", "options": ["a) Apófisis estiloides.", "b) Apófisis cigomática.", "c) Porción petromastoidea.", "d) Crista galli."], "answer": "d" },
+    { "q": "¿A través de qué estructura se continúa la cavidad craneana con el conducto raquídeo?", "options": ["a) Agujero oval.", "b) Agujero yugular.", "c) Foramen magno.", "d) Canal del hipogloso."], "answer": "c" },
+    { "q": "¿Cuáles son los principales huesos que constituyen el esqueleto óseo de la cara?", "options": ["a) Frontal, nasal y etmoides.", "b) Maxilares, cigomáticos y mandíbula.", "c) Temporal, parietal y occipital.", "d) Esfenoides, etmoides y frontal."], "answer": "b" },
+    { "q": "¿Con qué huesos se articula el hueso cigomático?", "options": ["a) Parietal, temporal y maxilar.", "b) Frontal, maxilar y temporal.", "c) Nasal, lagrimal y maxilar.", "d) Esfenoides, frontal y parietal."], "answer": "b" },
+    { "q": "¿Qué tipo de articulaciones forman los huesos cigomáticos?", "options": ["a) Móviles.", "b) Semimóviles.", "c) Inmóviles.", "d) Sinoviales."], "answer": "c" },
+    { "q": "¿Qué estructura une las dos mitades de la mandíbula?", "options": ["a) Ángulo de la mandíbula.", "b) Sínfisis mentoniana.", "c) Apófisis coronoides.", "d) Cóndilo."], "answer": "b" },
+    { "q": "¿Cuál de las siguientes NO es una parte de la mandíbula?", "options": ["a) Cuerpo horizontal.", "b) Rama vertical.", "c) Línea milohioidea.", "d) Crista galli."], "answer": "d" },
+    { "q": "¿Qué dos procesos o apófisis superiores presenta la rama de la mandíbula?", "options": ["a) Cóndilo y apófisis estiloides.", "b) Apófisis coronoides y cóndilo.", "c) Apófisis cigomática y cóndilo.", "d) Apófisis coronoides y apófisis estiloides."], "answer": "b" },
+    { "q": "¿Qué músculo se inserta en la apófisis coronoides de la mandíbula?", "options": ["a) Masetero.", "b) Temporal.", "c) Pterigoideo lateral.", "d) Digástrico."], "answer": "b" },
+    { "q": "¿Qué tipo de articulación es la articulación temporomandibular?", "options": ["a) Fibrosa.", "b) Cartilaginosa.", "c) Sinovial.", "d) Esférica."], "answer": "c" },
+    { "q": "¿Cuál es el número de dientes permanentes en un adulto?", "options": ["a) 20", "b) 28", "c) 32", "d) 36"], "answer": "c" },
+    { "q": "¿Cuántos molares hay en cada cuadrante de la dentadura de un adulto?", "options": ["a) 2", "b) 3", "c) 4", "d) 5"], "answer": "b" },
+    { "q": "¿Cuál es el tejido más duro y radiopaco del organismo que recubre la corona del diente?", "options": ["a) Dentina.", "b) Pulpa.", "c) Esmalte.", "d) Cemento."], "answer": "c" },
+    { "q": "¿Qué parte del diente está recubierta por la encía?", "options": ["a) Corona.", "b) Raíz.", "c) Cuello.", "d) Pulpa."], "answer": "c" },
+    { "q": "¿Cuál es la función principal de la membrana periodontal?", "options": ["a) Recubrir la corona del diente.", "b) Llenar la cavidad de la pulpa.", "c) Conectar las raíces de los dientes al hueso alveolar.", "d) Producir el esmalte dental."], "answer": "c" },
+    { "q": "¿Cuál de las siguientes estructuras NO forma parte de la cavidad bucal?", "options": ["a) Lengua.", "b) Dientes.", "c) Orofaringe.", "d) Nasofaringe."], "answer": "d" },
+    { "q": "¿Qué estructura separa la orofaringe de la nasofaringe?", "options": ["a) Paladar duro.", "b) Paladar blando.", "c) Úvula.", "d) Lengua."], "answer": "b" },
+    { "q": "¿Dónde se sitúan principalmente los botones gustativos para el sabor dulce?", "options": ["a) En la punta de la lengua.", "b) En los lados de la lengua.", "c) En el fondo de la lengua.", "d) En el centro de la lengua."], "answer": "a" },
+    { "q": "¿Cuál es la glándula salival de mayor tamaño?", "options": ["a) Submaxilar.", "b) Sublingual.", "c) Parótida.", "d) Salival menor."], "answer": "c" },
+    { "q": "¿Dónde desemboca el conducto de Stenon?", "options": ["a) En el suelo de la boca.", "b) Detrás del segundo molar superior.", "c) Al lado del frenillo de la lengua.", "d) En la cavidad nasal."], "answer": "b" },
+    { "q": "¿Qué enzima secretan mayoritariamente las células acinares de la glándula parótida?", "options": ["a) Mucina.", "b) Amilasa.", "c) Lipasa.", "d) Maltasa."], "answer": "b" },
+    { "q": "¿Cuál de los siguientes iones aumenta su concentración en las células ductales de las glándulas salivales?", "options": ["a) Na+", "b) Ca2+", "c) K+", "d) Cl-"], "answer": "c" },
+    { "q": "¿Qué hormonas reducen la concentración de Na+ y aumentan la concentración de K+ en la saliva?", "options": ["a) Hormona tiroidea.", "b) Insulina y glucagón.", "c) Mineralocorticoides y hormona antidiurética.", "d) Hormona paratiroidea."], "answer": "c" },
+    { "q": "¿Dónde se sitúa la glándula submaxilar o submandibular?", "options": ["a) Detrás del ángulo de la mandíbula.", "b) En el suelo de la boca.", "c) Debajo de la mucosa oral.", "d) En la cavidad nasal."], "answer": "b" },
+    { "q": "¿Qué conducto secretor pertenece a la glándula submaxilar?", "options": ["a) Conducto de Stenon.", "b) Conducto de Wharton.", "c) Conducto de Rivinus.", "d) Conducto parotídeo."], "answer": "b" },
+    { "q": "¿Qué tipo de secreción produce principalmente la glándula sublingual?", "options": ["a) Serosa.", "b) Mucosa.", "c) Mixta (serosa y mucosa) en igual proporción.", "d) Ninguna de las anteriores."], "answer": "b" },
+    { "q": "¿Cuál de las siguientes NO es una parte del oído externo?", "options": ["a) Pabellón auricular.", "b) Conducto auditivo externo.", "c) Membrana timpánica.", "d) Ninguna de las anteriores."], "answer": "c" },
+    { "q": "¿Dónde está alojado el oído medio?", "options": ["a) En el hueso frontal.", "b) En la porción petrosa del temporal.", "c) En el hueso occipital.", "d) En el hueso esfenoides."], "answer": "b" },
+    { "q": "¿Qué estructura conecta el oído medio con la orofaringe?", "options": ["a) Conducto auditivo externo.", "b) Trompa de Eustaquio.", "c) Canal coclear.", "d) Laberinto membranoso."], "answer": "b" },
+    { "q": "¿Cuál de las siguientes NO es una parte del oído interno?", "options": ["a) Cóclea.", "b) Canales semicirculares.", "c) Utriculo.", "d) Martillo."], "answer": "d" },
+    { "q": "¿Qué glándula se encuentra unida por un istmo central?", "options": ["a) Paratiroides.", "b) Tiroides.", "c) Submaxilar.", "d) Sublingual."], "answer": "b" },
+    { "q": "¿Cuántas glándulas paratiroides suele haber normalmente?", "options": ["a) 2", "b) 4", "c) 6", "d) 8"], "answer": "b" },
+    { "q": "¿Dónde nacen las arterias carótidas comunes?", "options": ["a) A partir de la arteria subclavia.", "b) A partir de la arteria yugular interna.", "c) A partir de la arteria braquiocefálica.", "d) A partir de la arteria vertebral."], "answer": "c" }
+  ],
+    "Cráneo 2": [
+      {q:"Según el texto, ¿en qué dos partes se divide anatómicamente el sistema nervioso?", options:["a) Cerebro y cerebelo","b) Encéfalo y médula espinal","c) Sistema Nervioso Central y Sistema Nervioso Periférico","d) Tronco cerebral y nervios craneales"], answer:"c"},
+      {q:"¿Cuál de las siguientes estructuras NO forma parte del encéfalo?", options:["a) Cerebro","b) Cerebelo","c) Médula espinal","d) Tronco cerebral"], answer:"c"},
+      {q:"¿En qué parte del cráneo se encuentra el encéfalo?", options:["a) Base del cráneo","b) Bóveda craneal","c) Cavidad orbitaria","d) Fosa nasal"], answer:"b"},
+      {q:"¿Cuáles son las tres divisiones principales del encéfalo?", options:["a) Cerebro, médula espinal y bulbo raquídeo","b) Cerebro, cerebelo y tronco cerebral","c) Mesencéfalo, protuberancia y bulbo raquídeo","d) Hipotálamo, tálamo y glándula pituitaria"], answer:"b"},
+      {q:"¿Qué estructura divide parcialmente el cerebro en los hemisferios derecho e izquierdo?", options:["a) Cisura de Silvio","b) Surco central","c) Fisura longitudinal","d) Cuerpo calloso"], answer:"c"},
+      {q:"¿Cuál de las siguientes NO es una formación inter-hemisférica de la base del cerebro?", options:["a) Quiasma de los nervios ópticos","b) Trígono olfativo","c) Tuber cinereum","d) Bulbo raquídeo"], answer:"d"},
+      {q:"¿Qué estructura une el tuber cinereum a la hipófisis?", options:["a) Quiasma óptico","b) Trígono olfativo","c) Tallo hipofisario","d) Bulbo olfatorio"], answer:"c"},
+      {q:"¿Cuántas estructuras anatómicas denominadas ventrículos presenta el cerebro?", options:["a) 2","b) 3","c) 4","d) 6"], answer:"c"},
+      {q:"¿Dónde se sitúan los ventrículos laterales?", options:["a) En el tálamo","b) Entre el cerebelo y el tronco cerebral","c) A lo largo de los dos hemisferios (telencefálicos)","d) En el acueducto cerebral"], answer:"c"},
+      {q:"¿Qué estructura conecta los ventrículos laterales con el tercer ventrículo?", options:["a) Acueducto cerebral","b) Foramen interventricular (agujero de Monro)","c) Conducto central","d) Cuarto ventrículo"], answer:"b"},
+      {q:"¿Qué separa la cisura de Silvio?", options:["a) Los lóbulos frontal y parietal","b) Los lóbulos frontal y temporal","c) Los lóbulos parietal y occipital","d) Los lóbulos temporal y occipital"], answer:"b"},
+      {q:"¿Cuál es el nombre alternativo del surco central?", options:["a) Cisura de Silvio","b) Surco lateral","c) Cisura de Rolando","d) Sulcus parietooccipitalis"], answer:"c"},
+      {q:"¿Qué cisura separa los lóbulos parietal y occipital en la cara medial de cada hemisferio?", options:["a) Surco lateral","b) Surco central","c) Cisura de Silvio","d) Cisura perpendicular interna (sulcus parietooccipitalis)"], answer:"d"},
+      {q:"¿Qué lóbulo del cerebro se encarga del control de los movimientos voluntarios, el habla y las emociones?", options:["a) Lóbulo parietal","b) Lóbulo temporal","c) Lóbulo frontal","d) Lóbulo occipital"], answer:"c"},
+      {q:"¿En qué lóbulo se sitúan las áreas relacionadas con la recepción de los estímulos auditivos?", options:["a) Lóbulo frontal","b) Lóbulo parietal","c) Lóbulo temporal","d) Lóbulo occipital"], answer:"c"},
+      {q:"¿Cuál es la función principal del lóbulo occipital?", options:["a) Reconocimiento e integración de estímulos sensoriales","b) Control de movimientos voluntarios y habla","c) Recepción y reconocimiento de estímulos auditivos","d) Reconocimiento e integración de estímulos visuales"], answer:"d"},
+      {q:"¿Dónde se ubica el lóbulo de la ínsula o de Reil?", options:["a) En la cara medial de los hemisferios","b) Debajo del surco lateral","c) En el suelo del surco lateral","d) Detrás de los lóbulos parietal y temporal"], answer:"c"},
+      {q:"¿Qué nombre reciben las regiones de los lóbulos parietal, temporal y occipital que cubren el lóbulo de Reil?", options:["a) Cuerpo calloso","b) Opérculo","c) Claustrum","d) Putamen"], answer:"b"},
+      {q:"¿Cuál es la parte interna más espesa de los hemisferios cerebrales?", options:["a) Corteza cerebral","b) Sustancia gris","c) Sustancia blanca","d) Ganglios basales"], answer:"c"},
+      {q:"¿Qué tipo de fibras nerviosas forman el cuerpo calloso?", options:["a) Fibras de proyección","b) Fibras de asociación","c) Fibras comisurales","d) Fibras sensitivas"], answer:"c"},
+      {q:"¿Cuál es la porción más anterior del cuerpo calloso?", options:["a) Rodete o splenium","b) Cuerpo o tronco","c) Rodilla o genu","d) Pico o rostrum"], answer:"d"},
+      {q:"¿Qué estructura conecta las áreas correspondientes de ambos hemisferios?", options:["a) Comisura anterior","b) Comisura habenular","c) Cuerpo calloso","d) Comisura posterior"], answer:"c"},
+      {q:"¿Cuál de las siguientes NO es parte de los ganglios basales?", options:["a) Núcleo caudado","b) Núcleo lenticular","c) Tálamo","d) Claustrum (antemuro)"], answer:"c"},
+      {q:"¿Qué dos segmentos forman el núcleo lenticular?", options:["a) Cabeza y cola","b) Putamen y globus pallidus","c) Cuerpo y rodete","d) Rostrum y genu"], answer:"b"},
+      {q:"¿Qué estructura separa el núcleo lenticular de la cabeza del núcleo caudado y del tálamo óptico?", options:["a) Cápsula externa","b) Cápsula interna","c) Antemuro","d) Claustrum"], answer:"b"},
+      {q:"¿Cómo se llama la capa delgada de sustancia blanca lateral al núcleo lenticular?", options:["a) Cápsula interna","b) Cápsula externa","c) Claustrum","d) Antemuro"], answer:"b"},
+      {q:"¿Qué estructura tiene forma de lente bicóncava?", options:["a) Núcleo caudado","b) Núcleo lenticular","c) Claustrum","d) Putamen"], answer:"b"},
+      {q:"¿Qué estructura del núcleo caudado termina en el núcleo amigdalino?", options:["a) Cabeza","b) Cuerpo","c) Cola","d) Putamen"], answer:"c"},
+      {q:"¿Dónde se sitúa el antemuro (claustrum)?", options:["a) Entre el tálamo y el hipotálamo","b) Entre el putamen y el lóbulo de la ínsula","c) Dentro del núcleo lenticular","d) En la corteza cerebral"], answer:"b"},
+      {q:"¿Qué estructuras del encéfalo rodean al tercer ventrículo cerebral?", options:["a) Hipotálamo, hipófisis y glándula pineal","b) Tálamo óptico, hipotálamo y glándula pineal (epífisis)","c) Ganglios basales, tálamo y cuerpo calloso","d) Mesencéfalo, protuberancia y bulbo raquídeo"], answer:"b"},
+      {q:"¿Cómo se comunican los dos núcleos ovoides del tálamo óptico?", options:["a) A través del cuerpo calloso","b) A través de la comisura anterior","c) Por la adherencia intertalámica","d) Por el acueducto cerebral"], answer:"c"},
+      {q:"¿Qué nombre recibe la porción posterior más redondeada del tálamo óptico?", options:["a) Pulvinar","b) Genu","c) Rostrum","d) Splenium"], answer:"a"},
+      {q:"¿Qué forma el hipotálamo?", options:["a) Las paredes laterales del tercer ventrículo","b) El suelo del tercer ventrículo","c) El techo del tercer ventrículo","d) El agujero de Monro"], answer:"b"},
+      {q:"¿Qué estructura del hipotálamo desciende hasta el lóbulo posterior de la hipófisis?", options:["a) Quiasma óptico","b) Tuber cinereum","c) Tallo pituitario o infundibular","d) Cuerpo mamilar"], answer:"c"},
+      {q:"¿Cuál es la función principal del hipotálamo?", options:["a) Control de la actividad motora","b) Control de la actividad autónoma","c) Procesamiento de la información visual","d) Regulación del sueño"], answer:"b"},
+      {q:"¿Dónde se sitúa la glándula pineal o epífisis?", options:["a) En la silla turca","b) Entre los extremos anteriores del tálamo óptico","c) Entre los extremos posteriores del tálamo óptico","d) En el tercer ventrículo"], answer:"c"},
+      {q:"¿Qué estructura del encéfalo se aloja en la silla turca?", options:["a) Glándula pineal","b) Glándula pituitaria o hipófisis","c) Hipotálamo","d) Tálamo óptico"], answer:"b"},
+      {q:"¿Qué estructura conecta la hipófisis con el tuber cinereum?", options:["a) Quiasma óptico","b) Infundibulum (tallo)","c) Cuerpo calloso","d) Protuberancia"], answer:"b"},
+      {q:"¿Qué parte del cerebro conecta los hemisferios cerebrales con la médula espinal?", options:["a) Cerebelo","b) Tronco cerebral","c) Diencéfalo","d) Cuerpo calloso"], answer:"b"},
+      {q:"¿Cuáles son las tres partes en las que se divide el tronco cerebral?", options:["a) Cerebro medio (mesencéfalo), protuberancia (puente de Varolio) y bulbo raquídeo (médula oblongata)","b) Tálamo, hipotálamo y glándula pineal","c) Núcleo caudado, núcleo lenticular y claustrum","d) Lóbulo frontal, lóbulo parietal y lóbulo temporal"], answer:"a"}
+    ],
+    "Cráneo 3": [
+      {q:"¿Cuál es el objetivo de la proyección lateral de cráneo?", options:["a) Visualizar los senos paranasales.","b) Panorámica lateral de cráneo y cara, específica para ver la calota.","c) Ver las vías aéreas nasales.","d) Visualizar fracturas y fisuras de la nariz."], answer:"b"},
+      {q:"¿Dónde se centra el rayo en la proyección lateral de cráneo?", options:["a) En el acantion.","b) A 2 centímetros distal del nasion.","c) 2 centímetros por encima del conducto auditivo externo (CAE).","d) En la parte alta del frontal."], answer:"c"},
+      {q:"¿Qué se visualiza en la proyección lateral de cráneo?", options:["a) Senos frontales y maxilares.","b) Huesos propios de la nariz.","c) Dorso de la silla turca, seno esfenoidal y porción escamosa de los huesos parietal y temporal.","d) Vía aérea nasal y oral."], answer:"c"},
+      {q:"¿Qué proyección se utiliza para visualizar sinusitis?", options:["a) Proyección lateral de cráneo.","b) Proyección lateral de cavum.","c) Proyección de senos paranasales o de Waters parietocantal.","d) Proyección de Towne."], answer:"c"},
+      {q:"En la proyección de senos paranasales, ¿qué senos se visualizan mejor?", options:["a) Solo los senos esfenoidales.","b) Los senos frontales y maxilares.","c) Solo los senos etmoidales.","d) Todos los senos paranasales por igual."], answer:"b"},
+      {q:"¿Cuál es la posición del paciente en la proyección de senos paranasales?", options:["a) Decúbito supino.","b) Decúbito prono.","c) Bipedestación o sentado en PA.","d) Lateral, con la boca abierta."], answer:"c"},
+      {q:"¿Qué ángulo debe tener la LOM (Línea Orbitomeatal) en la proyección de Waters?", options:["a) 0°","b) 90°","c) 37°","d) 45°"], answer:"c"},
+      {q:"¿Cuál es el objetivo de la proyección lateral de cavum?", options:["a) Visualizar los huesos propios de la nariz.","b) Ver la silla turca.","c) Ver las vías aéreas nasales.","d) Explorar la parte posterior del cráneo."], answer:"c"},
+      {q:"¿En qué posición se realiza la proyección lateral de cavum?", options:["a) Decúbito supino.","b) Decúbito prono.","c) Sentado lateralmente con la boca abierta.","d) Bipedestación en PA."], answer:"c"},
+      {q:"¿Qué se visualiza en la proyección lateral de cavum?", options:["a) Senos frontales y maxilares.","b) Huesos nasales.","c) Vía aérea, nasal y oral.","d) Silla turca."], answer:"c"},
+      {q:"¿Qué se debe indicar al paciente en la proyección lateral de cavum?", options:["a) Que trague saliva.","b) Que inspire por la boca.","c) Que inspire por la nariz y no trague.","d) Que cierre la boca."], answer:"c"},
+      {q:"¿Cuál es el objetivo de la proyección lateral de huesos propios de la nariz?", options:["a) Ver la silla turca.","b) Visualizar fracturas y fisuras de la nariz.","c) Ver las vías aéreas nasales.","d) Explorar la fosa posterior."], answer:"b"},
+      {q:"¿Cuál es la posición más utilizada para la proyección de huesos propios de la nariz?", options:["a) Bipedestación.","b) Decúbito supino.","c) Decúbito semiprono apoyando la mandíbula.","d) Sentado con la boca abierta."], answer:"c"},
+      {q:"¿Dónde se centra el rayo en la proyección de huesos propios de la nariz?", options:["a) En el acantion.","b) A 2 centímetros distal del nasion.","c) 2 centímetros por encima del CAE.","d) En la silla turca."], answer:"b"},
+      {q:"¿Qué se visualiza en la proyección lateral de huesos propios de la nariz?", options:["a) Los senos paranasales.","b) La silla turca.","c) Los huesos propios y sus articulaciones.","d) La vía aérea."], answer:"c"},
+      {q:"¿Cuál es el objetivo de la proyección lateral de silla turca?", options:["a) Visualizar los huesos nasales.","b) Ver la silla turca.","c) Ver los senos paranasales.","d) Explorar la parte posterior del cráneo."], answer:"b"},
+      {q:"¿Dónde se centra el rayo en la proyección lateral de silla turca?", options:["a) En el nasion.","b) En el acantion.","c) 2 centímetros por delante del CAE.","d) 2 centímetros por encima del CAE."], answer:"c"},
+      {q:"¿Qué proyección se realiza comúnmente en politraumatizados?", options:["a) Proyección de Waters.","b) Proyección lateral de cavum.","c) Proyección de Towne.","d) Proyección de huesos nasales."], answer:"c"},
+      {q:"¿Qué posición del paciente se utiliza en la proyección de Towne?", options:["a) Solo decúbito supino.","b) Solo bipedestación.","c) Bipedestación AP, decúbito supino o sentado.","d) Lateral con la boca abierta."], answer:"c"},
+      {q:"¿Qué angulación tiene el rayo en la proyección de Towne?", options:["a) 0°","b) 90°","c) 30° caudal.","d) 37°"], answer:"c"},
+      {q:"¿Qué se visualiza en la proyección de Towne?", options:["a) Senos frontales y maxilares.","b) Huesos nasales.","c) Vía aérea.","d) Fosa posterior, occipital, peñascos, dorso de la silla turca, agujero magno y conducto auditivo interno."], answer:"d"},
+      {q:"En la proyección lateral de cráneo, ¿a qué altura se centra el rayo?", options:["a) A nivel del nasion.","b) A nivel del acantion.","c) 2 cm por encima del CAE.","d) 2 cm por debajo del CAE."], answer:"c"},
+      {q:"¿Qué estructura anatómica debe estar de perfil en la proyección lateral de cráneo?", options:["a) Los senos frontales.","b) La silla turca.","c) Los huesos nasales.","d) Los arcos cigomáticos."], answer:"d"},
+      {q:"En la proyección de Waters, ¿qué línea anatómica debe formar un ángulo de 37° con el chasis?", options:["a) La línea naso-mentoniana.","b) La línea orbitomeatal (LOM).","c) La línea interpupilar.","d) La línea sagital media."], answer:"b"},
+      {q:"¿Qué tipo de patología se busca principalmente con la proyección de Waters?", options:["a) Fracturas de huesos nasales.","b) Sinusitis.","c) Tumores de la silla turca.","d) Traumatismos occipitales."], answer:"b"},
+      {q:"En la proyección lateral de cavum, ¿qué posición debe tener el plano medio sagital del paciente?", options:["a) Perpendicular al chasis.","b) Paralelo al chasis.","c) A 45° con el chasis.","d) A 37° con el chasis."], answer:"b"},
+      {q:"¿A qué altura se centra el rayo en la proyección lateral de cavum?", options:["a) A nivel del nasion.","b) A nivel del acantion.","c) A nivel del pómulo o arco cigomático.","d) 2 cm por encima del CAE."], answer:"c"},
+      {q:"¿Qué estructura anatómica es crucial evaluar en la proyección lateral de cavum?", options:["a) La silla turca.","b) Los senos paranasales.","c) La vía aérea nasal y oral.","d) Los huesos nasales."], answer:"c"},
+      {q:"En la proyección lateral de huesos propios de la nariz, ¿dónde se centra el rayo?", options:["a) Directamente sobre el nasion.","b) Directamente sobre el acantion.","c) 2 cm distal al nasion.","d) 2 cm proximal al nasion."], answer:"c"},
+      {q:"¿Cuál es el objetivo principal de la proyección de Towne?", options:["a) Evaluar los senos paranasales.","b) Evaluar la silla turca.","c) Evaluar la parte posterior del cráneo.","d) Evaluar los huesos nasales."], answer:"c"},
+      {q:"En la proyección de Towne, ¿qué línea anatómica debe estar perpendicular al chasis?", options:["a) La línea naso-mentoniana.","b) La línea orbitomeatal (LOM).","c) La línea interpupilar.","d) La línea sagital media."], answer:"b"},
+      {q:"¿Qué estructura anatómica se observa dentro del agujero magno en una proyección de Towne bien realizada?", options:["a) La silla turca.","b) El dorso de la silla turca y las apófisis clinoides posteriores.","c) Los senos esfenoidales.","d) Los huesos propios de la nariz."], answer:"b"},
+      {q:"¿Qué proyección es la más adecuada para obtener una visión panorámica de la calota craneal?", options:["a) Proyección de Waters.","b) Proyección lateral de cráneo.","c) Proyección de Towne.","d) Proyección lateral de cavum."], answer:"b"},
+      {q:"¿Qué proyección es específica para visualizar los senos paranasales en su conjunto?", options:["a) Proyección lateral de cráneo.","b) Proyección de Waters.","c) Proyección lateral de cavum.","d) Proyección de Towne."], answer:"b"},
+      {q:"¿En qué proyección es esencial que el paciente mantenga la boca abierta?", options:["a) Proyección lateral de cráneo.","b) Proyección de Waters.","c) Proyección lateral de cavum.","d) Proyección de Towne."], answer:"b"},
+      {q:"¿Qué proyección se utiliza específicamente para evaluar las adenoides o vegetaciones?", options:["a) Proyección de Waters.","b) Proyección lateral de cráneo.","c) Proyección lateral de cavum.","d) Proyección de Towne."], answer:"c"},
+      {q:"¿En qué proyección se busca identificar fracturas o fisuras de los huesos nasales?", options:["a) Proyección de Waters.","b) Proyección lateral de cráneo.","c) Proyección lateral de huesos propios de la nariz.","d) Proyección de Towne."], answer:"c"},
+      {q:"¿Qué proyección está diseñada específicamente para visualizar la silla turca?", options:["a) Proyección de Waters.","b) Proyección lateral de silla turca.","c) Proyección lateral de cavum.","d) Proyección de Towne."], answer:"b"},
+      {q:"¿Qué proyección se indica comúnmente en pacientes con traumatismos en la región occipital?", options:["a) Proyección de Waters.","b) Proyección lateral de cráneo.","c) Proyección lateral de cavum.","d) Proyección de Towne."], answer:"d"},
+      {q:"¿Qué estructura anatómica se observa en el centro de la órbita en la imagen proporcionada?", options:["a) Senos frontales","b) Peñascos","c) Senos maxilares","d) Silla turca"], answer:"b"}
+    ],
+"Tac 1": [
+  {q: "¿Quién investigó con proyecciones angulares en movimiento con rayos X en 1965?", options: ["a) Allan Cormak", "b) Godfrey Newbold Hounsfield", "c) Ledley y Schellinger", "d) Schwartz y Rothman"], answer: "b"},
+  {q: "¿En qué año se instaló el primer prototipo de TC en el Atkinson Morley's Hospital?", options: ["a) 1965", "b) 1970", "c) 1974", "d) 1987"], answer: "b"},
+  {q: "¿Quiénes recibieron el Premio Nobel en 1979 por sus trabajos en la TC?", options: ["a) Ledley y Schellinger", "b) Schwartz y Rothman", "c) Godfrey Newbold Hounsfield y Allan Cormak", "d) Ambrose y Hounsfield"], answer: "c"},
+  {q: "¿En qué año se realizó el primer TC de cuerpo entero?", options: ["a) 1970", "b) 1972", "c) 1974", "d) 1987"], answer: "c"},
+  {q: "¿Qué significa la palabra \"Gantry\"?", options: ["a) Soporte", "b) Tubo", "c) Portal o pórtico", "d) Detector"], answer: "c"},
+  {q: "¿Cuál es la principal limitación de los tubos de la TC?", options: ["a) La radiación", "b) El tamaño", "c) La temperatura", "d) La velocidad de rotación"], answer: "c"},
+  {q: "¿Qué materiales se utilizan en los tubos de la TC para controlar la temperatura?", options: ["a) Plomo y acero", "b) Grafito y aceite", "c) Cobre y aluminio", "d) Oro y plata"], answer: "b"},
+  {q: "¿Cuántos colimadores tienen los equipos actuales de TC?", options: ["a) Uno", "b) Dos", "c) Tres", "d) Cuatro"], answer: "b"},
+  {q: "¿Dónde se localiza el colimador prepaciente?", options: ["a) Cerca del detector", "b) Cerca del tubo de Rx", "c) Después del paciente", "d) En el centro del gantry"], answer: "b"},
+  {q: "¿Qué función tiene el colimador pospaciente?", options: ["a) Establecer el grosor del haz", "b) Reducir la radiación dispersa", "c) Controlar la temperatura", "d) Aumentar la intensidad del haz"], answer: "b"},
+  {q: "¿Qué tipo de detectores se utilizan en los equipos actuales de TC?", options: ["a) Detectores de gas", "b) Detectores líquidos", "c) Detectores sólidos", "d) Detectores de vacío"], answer: "c"},
+  {q: "¿Qué término se utiliza para describir la relación entre la velocidad de desplazamiento de la mesa y la velocidad de giro del tubo?", options: ["a) Rotación", "b) Pitch", "c) Colimación", "d) Adquisición"], answer: "b"},
+  {q: "Si el pitch es igual a 1, ¿qué significa?", options: ["a) Que hay solapamiento", "b) Que no hay solapamiento", "c) Que la dosis de radiación es mayor", "d) Que la mesa se mueve lentamente"], answer: "b"},
+  {q: "¿Qué ocurre si el pitch está por debajo de 1?", options: ["a) No hay solapamiento", "b) Se reduce la dosis de radiación", "c) Se produce solapamiento", "d) La imagen es más nítida"], answer: "c"},
+  {q: "¿Cuál es el rango de valor de pitch que se utiliza generalmente en la práctica clínica?", options: ["a) 0.5 y 1", "b) 1 y 2", "c) 2 y 3", "d) 0 y 0.5"], answer: "b"},
+  {q: "¿Qué indica un pitch bajo en términos de dosis de radiación?", options: ["a) Menor dosis", "b) Mayor dosis", "c) Dosis igual", "d) Dosis variable"], answer: "b"},
+  {q: "En la ecuación  I=I₀·e^(-μL), ¿qué representa la \"I\"?", options: ["a) Energía que sale del tubo", "b) Energía que cede al material", "c) Energía que llega al detector", "d) Coeficiente lineal de atenuación"], answer: "c"},
+  {q: "¿Qué representa \"μ\" en la ecuación?", options: ["a) Distancia recorrida por el Rx", "b) Base de los logaritmos neperianos", "c) Coeficiente lineal de atenuación", "d) Energía que sale del tubo"], answer: "c"},
+  {q: "¿Qué representa \"L\" en la ecuación?", options: ["a) Energía que llega al detector", "b) Grosor de corte", "c) Energía absorbida por el paciente", "d) Base de los logaritmos neperianos"], answer: "b"},
+  {q: "¿Qué se obtiene después del posprocesamiento en un ordenador en la TC?", options: ["a) Una imagen 3D", "b) Un corte axial del paciente", "c) Un gráfico de atenuación", "d) Un holograma"], answer: "b"},
+  {q: "¿Cuál es la principal limitación de la radiografía simple que supera la TC?", options: ["a) La baja resolución", "b) La superposición de objetos tridimensionales", "c) La alta dosis de radiación", "d) El alto costo"], answer: "b"},
+  {q: "¿Cómo se representan los resultados en la pantalla del monitor de la TC?", options: ["a) Vectores", "b) Celdas llamadas matriz formadas por pixeles", "c) Gráficos de barras", "d) Hologramas"], answer: "b"},
+  {q: "¿Qué representa cada píxel en la imagen de la TC?", options: ["a) Un punto", "b) Un volumen del paciente (vóxel)", "c) Un área", "d) Una línea"], answer: "b"},
+  {q: "¿Qué técnica se utiliza para reconstruir la imagen en la TC?", options: ["a) Proyección simple", "b) Retroproyección", "c) Interpolarización", "d) Extrapolación"], answer: "b"},
+  {q: "¿Cuál es el principal defecto de la técnica de retroproyección?", options: ["a) La imagen es muy nítida", "b) La imagen es borrosa", "c) La imagen es muy contrastada", "d) No tiene defectos"], answer: "b"},
+  {q: "¿Qué proceso matemático se utiliza para corregir la borrosidad en la imagen reconstruida?", options: ["a) Integración", "b) Derivación", "c) Convolución (filtrar la imagen)", "d) Multiplicación matricial"], answer: "c"},
+  {q: "¿Qué significan las siglas FOV?", options: ["a) Factor de visión", "b) Campo de visión (field of view)", "c) Frecuencia de operación visual", "d) Formato de objeto virtual"], answer: "b"},
+  {q: "¿Con qué se representan los valores de atenuación de cada píxel?", options: ["a) Decibelios (dB)", "b) Unidades Hounsfield (UH)", "c) Pixeles", "d) Vóxeles"], answer: "b"},
+  {q: "¿Cuál es el número de TC para el agua?", options: ["a) -1000 UH", "b) -100 a 100 UH", "c) 0 UH", "d) 80 a 1000 UH"], answer: "c"},
+  {q: "¿Qué sistema ha marcado las diferencias en la evolución de la TC?", options: ["a) El sistema de mesa", "b) El sistema de ordenador", "c) El sistema de tubo de rayos X y detectores", "d) El sistema de alimentación eléctrica"], answer: "c"},
+  {q: "¿Cómo se basa el funcionamiento de la 1ª generación de TC?", options: ["a) Haz de rayos X en abanico y rotación completa", "b) Anillo de detectores fijos", "c) Haz de rayos X paralelo y traslación-rotación", "d) Múltiples haces de RX y detectores independientes"], answer: "c"},
+  {q: "¿Cuál era el tiempo de barrido aproximado en la 1ª generación de TC?", options: ["a) 1-3 segundos por corte", "b) 10-20 segundos por corte", "c) 20-60 segundos por corte", "d) 4-5 minutos por corte"], answer: "d"},
+  {q: "¿Qué principal avance presentó la 2ª generación de TC?", options: ["a) Anillo de detectores fijos", "b) Uso de múltiples haces de RX y detectores independientes", "c) Haz de rayos X en forma de abanico", "d) Movimiento continuo de la mesa"], answer: "b"},
+  {q: "¿Cuál fue la geometría del haz de rayos X en la 2ª generación de TC?", options: ["a) Paralelo", "b) Abanico", "c) Cónico", "d) Espiral"], answer: "b"},
+  {q: "¿Qué caracteriza a la 3ª generación de TC?", options: ["a) Anillo de detectores fijos", "b) Movimiento de traslación-rotación", "c) Arco móvil de detectores y tubo de rayos X girando 360°", "d) Haz de rayos X paralelo"], answer: "c"},
+  {q: "¿Qué se adicionó en la 3ª generación de TC para reducir las radiaciones secundarias?", options: ["a) Colimadores", "b) Filtros de aluminio", "c) Rejilla de tungsteno", "d) Blindaje de plomo"], answer: "c"},
+  {q: "¿Qué distingue a la 4ª generación de TC?", options: ["a) Arco móvil de detectores", "b) Anillo de detectores fijos y tubo de rayos X giratorio", "c) Haz de rayos X paralelo", "d) Múltiples haces de RX"], answer: "b"},
+  {q: "¿Qué inconveniente tenían los equipos de 4ª generación en comparación con los de 3ª generación?", options: ["a) Menor resolución de imagen", "b) Tiempos de corte más rápidos", "c) Necesidad de calibración más frecuente de los detectores", "d) Menor costo"], answer: "c"},
+  {q: "¿Qué desarrollo permitió la evolución al TAC helicoidal?", options: ["a) Nuevos detectores", "b) Anillo deslizante", "c) Software de reconstrucción", "d) Tubos de rayos X más potentes"], answer: "b"},
+  {q: "¿Cuál es la principal característica del TAC helicoidal?", options: ["a) La mesa se mantiene estática durante la adquisición", "b) El tubo y los detectores giran a la vez que se desplaza la mesa", "c) Utiliza un haz de rayos X paralelo", "d) Solo se adquiere un corte por rotación"], answer: "b"}
+],
+"Tac 2": [
+  {q: "¿Quién investigó con proyecciones angulares en movimiento con rayos X en 1965?", options: ["a) Allan Cormak", "b) Godfrey Newbold Hounsfield", "c) Ledley y Schellinger", "d) Schwartz y Rothman"], answer: "b"},
+  
+  {q: "¿En qué año se instaló el primer prototipo de TC en el Atkinson Morley's Hospital?", options: ["a) 1965", "b) 1970", "c) 1974", "d) 1987"], answer: "b"},
+  
+  {q: "¿Quiénes recibieron el Premio Nobel en 1979 por sus trabajos en la TC?", options: ["a) Ledley y Schellinger", "b) Schwartz y Rothman", "c) Godfrey Newbold Hounsfield y Allan Cormak", "d) Ambrose y Hounsfield"], answer: "c"},
+  
+  {q: "¿En qué año se realizó el primer TC de cuerpo entero?", options: ["a) 1970", "b) 1972", "c) 1974", "d) 1987"], answer: "c"},
+  
+  {q: "¿Qué significa la palabra 'Gantry'?", options: ["a) Soporte", "b) Tubo", "c) Portal o pórtico", "d) Detector"], answer: "c"},
+  
+  {q: "¿Cuál es la principal limitación de los tubos de la TC?", options: ["a) La radiación", "b) El tamaño", "c) La temperatura", "d) La velocidad de rotación"], answer: "c"},
+  
+  {q: "¿Qué materiales se utilizan en los tubos de la TC para controlar la temperatura?", options: ["a) Plomo y acero", "b) Grafito y aceite", "c) Cobre y aluminio", "d) Oro y plata"], answer: "b"},
+  
+  {q: "¿Cuántos colimadores tienen los equipos actuales de TC?", options: ["a) Uno", "b) Dos", "c) Tres", "d) Cuatro"], answer: "b"},
+  
+  {q: "¿Dónde se localiza el colimador prepaciente?", options: ["a) Cerca del detector", "b) Cerca del tubo de Rx", "c) Después del paciente", "d) En el centro del gantry"], answer: "b"},
+  
+  {q: "¿Qué función tiene el colimador pospaciente?", options: ["a) Establecer el grosor del haz", "b) Reducir la radiación dispersa", "c) Controlar la temperatura", "d) Aumentar la intensidad del haz"], answer: "b"},
+  
+  {q: "¿Qué tipo de detectores se utilizan en los equipos actuales de TC?", options: ["a) Detectores de gas", "b) Detectores líquidos", "c) Detectores sólidos", "d) Detectores de vacío"], answer: "c"},
+  
+  {q: "¿Qué término se utiliza para describir la relación entre la velocidad de desplazamiento de la mesa y la velocidad de giro del tubo?", options: ["a) Rotación", "b) Pitch", "c) Colimación", "d) Adquisición"], answer: "b"},
+  
+  {q: "Si el pitch es igual a 1, ¿qué significa?", options: ["a) Que hay solapamiento", "b) Que no hay solapamiento", "c) Que la dosis de radiación es mayor", "d) Que la mesa se mueve lentamente"], answer: "b"},
+  
+  {q: "¿Qué ocurre si el pitch está por debajo de 1?", options: ["a) No hay solapamiento", "b) Se reduce la dosis de radiación", "c) Se produce solapamiento", "d) La imagen es más nítida"], answer: "c"},
+  
+  {q: "¿Cuál es el rango de valor de pitch que se utiliza generalmente en la práctica clínica?", options: ["a) 0.5 y 1", "b) 1 y 2", "c) 2 y 3", "d) 0 y 0.5"], answer: "b"},
+  
+  {q: "¿Qué indica un pitch bajo en términos de dosis de radiación?", options: ["a) Menor dosis", "b) Mayor dosis", "c) Dosis igual", "d) Dosis variable"], answer: "b"},
+  
+  {q: "En la ecuación I=I₀⋅e^(-μL), ¿qué representa la 'I'?", options: ["a) Energía que sale del tubo", "b) Energía que cede al material", "c) Energía que llega al detector", "d) Coeficiente lineal de atenuación"], answer: "c"},
+  
+  {q: "¿Qué representa 'μ' en la ecuación?", options: ["a) Distancia recorrida por el Rx", "b) Base de los logaritmos neperianos", "c) Coeficiente lineal de atenuación", "d) Energía que sale del tubo"], answer: "c"},
+  
+  {q: "¿Qué representa 'L' en la ecuación?", options: ["a) Energía que llega al detector", "b) Grosor de corte", "c) Energía absorbida por el paciente", "d) Base de los logaritmos neperianos"], answer: "b"},
+  
+  {q: "¿Qué se obtiene después del posprocesamiento en un ordenador en la TC?", options: ["a) Una imagen 3D", "b) Un corte axial del paciente", "c) Un gráfico de atenuación", "d) Un holograma"], answer: "b"},
+  
+  {q: "¿Cuál es la principal limitación de la radiografía simple que supera la TC?", options: ["a) La baja resolución", "b) La superposición de objetos tridimensionales", "c) La alta dosis de radiación", "d) El alto costo"], answer: "b"},
+  
+  {q: "¿Cómo se representan los resultados en la pantalla del monitor de la TC?", options: ["a) Vectores", "b) Celdas llamadas matriz formadas por pixeles", "c) Gráficos de barras", "d) Hologramas"], answer: "b"},
+  
+  {q: "¿Qué representa cada píxel en la imagen de la TC?", options: ["a) Un punto", "b) Un volumen del paciente (vóxel)", "c) Un área", "d) Una línea"], answer: "b"},
+  
+  {q: "¿Qué técnica se utiliza para reconstruir la imagen en la TC?", options: ["a) Proyección simple", "b) Retroproyección", "c) Interpolarización", "d) Extrapolación"], answer: "b"},
+  
+  {q: "¿Cuál es el principal defecto de la técnica de retroproyección?", options: ["a) La imagen es muy nítida", "b) La imagen es borrosa", "c) La imagen es muy contrastada", "d) No tiene defectos"], answer: "b"},
+  
+  {q: "¿Qué proceso matemático se utiliza para corregir la borrosidad en la imagen reconstruida?", options: ["a) Integración", "b) Derivación", "c) Convolución (filtrar la imagen)", "d) Multiplicación matricial"], answer: "c"},
+  
+  {q: "¿Qué significan las siglas FOV?", options: ["a) Factor de visión", "b) Campo de visión (field of view)", "c) Frecuencia de operación visual", "d) Formato de objeto virtual"], answer: "b"},
+  
+  {q: "¿Con qué se representan los valores de atenuación de cada píxel?", options: ["a) Decibelios (dB)", "b) Unidades Hounsfield (UH)", "c) Pixeles", "d) Vóxeles"], answer: "b"},
+  
+  {q: "¿Cuál es el número de TC para el agua?", options: ["a) -1000 UH", "b) -100 a 100 UH", "c) 0 UH", "d) 80 a 1000 UH"], answer: "c"},
+  
+  {q: "¿Qué sistema ha marcado las diferencias en la evolución de la TC?", options: ["a) El sistema de mesa", "b) El sistema de ordenador", "c) El sistema de tubo de rayos X y detectores", "d) El sistema de alimentación eléctrica"], answer: "c"},
+  
+  {q: "¿Cómo se basa el funcionamiento de la 1ª generación de TC?", options: ["a) Haz de rayos X en abanico y rotación completa", "b) Anillo de detectores fijos", "c) Haz de rayos X paralelo y traslación-rotación", "d) Múltiples haces de RX y detectores independientes"], answer: "c"},
+  
+  {q: "¿Cuál era el tiempo de barrido aproximado en la 1ª generación de TC?", options: ["a) 1-3 segundos por corte", "b) 10-20 segundos por corte", "c) 20-60 segundos por corte", "d)  Es una técnica robusta y reproducible"], answer: "d"},
+{q: "¿Con qué se ha solucionado la limitación de las imágenes solo en el plano axial en la TC?", options: ["a) Con el uso de contrastes yodados.", "b) Con el desarrollo de los equipos multidetector.", "c) Con la disminución de la dosis de radiación.", "d) Con la reconstrucción en 2D."], answer: "b"},
+
+  {q: "¿Qué modalidad de imagen tiene mayor capacidad de diferenciación tisular y de sustancias en comparación con la TC?", options: ["a) Radiografía.", "b) Resonancia Magnética (RM).", "c) Ecografía.", "d) Medicina Nuclear."], answer: "b"},
+
+  {q: "¿Qué se considera artefacto en la TC?", options: ["a) La imagen real de las estructuras anatómicas.", "b) Toda distorsión de una imagen real que dificulta la visualización de las estructuras.", "c) Los números TC de la imagen reconstruida.", "d) Los coeficientes de atenuación del objeto."], answer: "b"},
+
+  {q: "¿Cuál es la causa del artefacto de endurecimiento del haz?", options: ["a) La alta energía de los fotones de rayos X.", "b) La diferente energía de los fotones de rayos X.", "c) El grosor de corte.", "d) El uso de contrastes yodados."], answer: "b"},
+
+  {q: "¿Qué estructuras actúan como filtros de la energía en el endurecimiento del haz?", options: ["a) Los tejidos blandos.", "b) Las estructuras óseas.", "c) Los contrastes.", "d) El aire."], answer: "b"},
+
+  {q: "¿Cómo se corrige el artefacto de error por volumen parcial o promediación?", options: ["a) Aumentando el grosor de corte.", "b) Reduciendo el grosor de corte.", "c) Modificando el kilovoltaje.", "d) Utilizando contrastes."], answer: "b"},
+
+  {q: "¿Qué causa el error por falta de homogeneidad del eje z?", options: ["a) El uso de contrastes.", "b) El movimiento del paciente.", "c) El desplazamiento de los detectores o la falta de homogeneidad del objeto en el eje z.", "d) La alta atenuación de las estructuras."], answer: "c"},
+
+  {q: "¿Qué efecto produce el error por falta de homogeneidad del eje z en la imagen?", options: ["a) Aumenta la nitidez.", "b) Produce un emborronamiento.", "c) Aumenta el contraste.", "d) No tiene efecto visible."], answer: "b"},
+    ],
+    "Aparato Urinario": [
+    {q: "¿Qué enzima convierte el angiotensinógeno en angiotensina I?", options: ["a) ECA", "b) Renina", "c) Aldosterona", "d) Eritropoyetina"], answer: "b"},
+    {q: "¿Qué tipo de células forman la mácula densa?", options: ["a) Podocitos", "b) Células yuxtaglomerulares", "c) Células epiteliales modificadas", "d) Fibroblastos"], answer: "c"},
+    {q: "¿Qué técnica radiológica está obsoleta debido al uso de la ecografía?", options: ["a) Pielografía retrógrada", "b) Punción renal percutánea", "c) Prostatografía", "d) Urografía intravenosa"], answer: "b"},
+    {q: "¿Qué estructura NO forma parte del trígono vesical?", options: ["a) Orificios ureterales", "b) Cuello vesical", "c) Uretra", "d) Cúpula vesical"], answer: "d"},
+    {q: "¿Qué posición se usa para evaluar ptosis renal?", options: ["a) Trendelenburg", "b) Bipedestación", "c) Decúbito prono", "d) Oblicua anterior"], answer: "b"},
+    {q: "¿Qué medio de contraste se utiliza en la urografía intravenosa?", options: ["a) Sulfato de bario", "b) Gadolinio", "c) Yodo hidrosoluble", "d) Aire"], answer: "c"},
+    {q: "¿Qué fase de la urografía intravenosa muestra la opacificación del parénquima renal?", options: ["a) Fase pielográfica", "b) Fase nefrográfica", "c) Fase ureteral", "d) Fase vesical"], answer: "b"},
+    {q: "¿Qué maniobra se utiliza para mejorar la visualización de los cálices renales durante la urografía?", options: ["a) Maniobra de Valsalva", "b) Compresión suprapúbica", "c) Posición de Trendelenburg", "d) Rotación oblicua"], answer: "b"},
+    {q: "¿Cuál es una contraindicación absoluta para la urografía intravenosa?", options: ["a) Diabetes mellitus", "b) Intolerancia al yodo", "c) Hipertensión arterial", "d) Anemia leve"], answer: "b"},
+    {q: "¿Qué técnica se emplea para estudiar la uretra posterior en hombres?", options: ["a) Uretrografía miccional", "b) Pielografía retrógrada", "c) Cistografía", "d) Uro-TC"], answer: "a"},
+    {q: "¿Qué proyección es útil para diferenciar cálculos renales de calcificaciones extraurinarias?", options: ["a) AP de abdomen", "b) Oblicua posterior", "c) Lateral", "d) Bipedestación"], answer: "b"},
+    {q: "¿Qué estructura NO es visible en una radiografía simple de abdomen?", options: ["a) Contornos renales", "b) Uréteres", "c) Músculos psoas", "d) Vejiga distendida"], answer: "b"},
+    {q: "¿Qué técnica se utiliza para evaluar el reflujo vesicoureteral?", options: ["a) Cistouretrografía miccional", "b) Pielografía anterógrada", "c) Urografía intravenosa", "d) RMN renal"], answer: "a"},
+    {q: "¿Qué hallazgo en una urografía sugiere uropatía obstructiva?", options: ["a) Aumento de la densidad renal", "b) Retraso en la excreción de contraste", "c) Vejiga contraída", "d) Uréteres no visibles"], answer: "b"},
+    {q: "¿Qué técnica es preferible para evaluar quistes renales en lugar de la punción percutánea?", options: ["a) Ecografía", "b) Urografía intravenosa", "c) Cistografía", "d) Uretrografía"], answer: "a"},
+    {q: "¿Qué estructura anatómica puede causar compresión extrínseca del uréter?", options: ["a) Arteria ilíaca", "b) Vena cava inferior", "c) Páncreas", "d) Bazo"], answer: "a"},
+    {q: "¿Qué proyección se usa para visualizar la uretra masculina en perfil?", options: ["a) Oblicua a 35-40°", "b) AP de pelvis", "c) Lateral decúbito", "d) Bipedestación"], answer: "a"},
+    {q: "¿Qué tipo de epitelio presenta la capa mucosa de los uréteres?", options: ["a) Epitelio estratificado plano", "b) Epitelio de transición", "c) Epitelio cilíndrico simple", "d) Epitelio pseudostratificado"], answer: "b"},
+    {q: "¿Cuál es la función principal del aparato yuxtaglomerular?", options: ["a) Producir renina", "b) Filtrar la orina", "c) Secretar aldosterona", "d) Reabsorber glucosa"], answer: "a"},
+    {q: "¿Qué estructura renal contiene la mácula densa?", options: ["a) Glomérulo", "b) Asa de Henle", "c) Túbulo distal", "d) Cápsula de Bowman"], answer: "c"},
+    {q: "¿Cuál es la longitud aproximada de la uretra femenina?", options: ["a) 2-6 cm", "b) 10-15 cm", "c) 20-25 cm", "d) 30-35 cm"], answer: "a"},
+    {q: "¿Qué hormona es producida por la acción de la renina en el riñón?", options: ["a) Insulina", "b) Angiotensina I", "c) Adrenalina", "d) Eritropoyetina"], answer: "b"},
+    {q: "¿Qué capa de la vejiga es rica en fibras elásticas?", options: ["a) Mucosa", "b) Submucosa", "c) Muscular", "d) Serosa"], answer: "b"},
+    {q: "¿Qué porción de la nefrona es impermeable al agua pero permeable a iones?", options: ["a) Asa de Henle ascendente", "b) Túbulo contorneado proximal", "c) Túbulo colector", "d) Glomérulo"], answer: "a"},
+    {q: "¿Qué estructura marca el límite entre la corteza y la médula renal?", options: ["a) Cálices renales", "b) Arterias arciformes", "c) Pelvis renal", "d) Uréter"], answer: "b"},
+    {q: "¿Qué maniobra se realiza para visualizar mejor los uréteres en una urografía intravenosa si no son visibles inicialmente?", options: ["a) Compresión ureteral", "b) Maniobra de Valsalva", "c) Inyección rápida de contraste", "d) Cambio a decúbito prono"], answer: "b"},
+    {q: "¿Cuál es el principal criterio de calidad en una radiografía simple de abdomen para evaluar el aparato urinario?", options: ["a) Visualización de las crestas ilíacas", "b) Presencia de gas intestinal disperso", "c) Nitidez de los contornos renales y músculos psoas", "d) Inclusión de toda la columna torácica"], answer: "c"},
+    {q: "¿En qué fase de la urografía intravenosa se opacifican los cálices renales?", options: ["a) Fase nefrográfica", "b) Fase pielográfica", "c) Fase ureteral", "d) Fase posmiccional"], answer: "b"},
+    {q: "¿Qué técnica se emplea para estudiar una fístula uretrovaginal?", options: ["a) Cistouretrografía miccional", "b) Vaginografía", "c) Pielografía retrógrada", "d) Urografía intravenosa"], answer: "b"},
+    {q: "¿Qué proyección se utiliza para diferenciar un cálculo ureteral de una flebolito en la pelvis?", options: ["a) Oblicua posterior", "b) Lateral", "c) Bipedestación", "d) Tomografía axial"], answer: "a"},
+    {q: "¿Qué complicación puede ocurrir durante una pielografía retrógrada si se inyecta contraste con excesiva presión?", options: ["a) Perforación ureteral", "b) Reflujo vesicoureteral", "c) Necrosis papilar", "d) Trombosis venosa renal"], answer: "a"},
+    {q: "¿Qué hallazgo en una urografía intravenosa sugeriría rotura del sistema colector?", options: ["a) Extravasación de contraste", "b) Ausencia de nefrograma", "c) Dilatación ureteral bilateral", "d) Calcificaciones en pelvis renal"], answer: "a"},
+    {q: "¿Qué estructura anatómica puede simular un defecto de llenado en la vejiga durante una cistografía?", options: ["a) Próstata hipertrófica", "b) Útero en retroversión", "c) Divertículo uretral", "d) Tumor de colon"], answer: "b"},
+    {q: "¿Qué técnica está contraindicada en pacientes con aneurisma de aorta abdominal?", options: ["a) Compresión ureteral durante urografía", "b) Uretrografía retrógrada", "c) Cistouretrografía miccional", "d) Ecografía renal Doppler"], answer: "a"},
+    {q: "¿Qué patología se asocia comúnmente con calcificaciones en 'araña' en la radiografía simple de abdomen?", options: ["a) Tuberculosis renal", "b) Cistinuria", "c) Hiperparatiroidismo", "d) Nefrocalcinosis"], answer: "a"},
+    {q: "¿Qué efecto tiene la aldosterona en el túbulo distal renal?", options: ["a) Aumenta la reabsorción de sodio", "b) Inhibe la secreción de potasio", "c) Reduce la reabsorción de agua", "d) Aumenta la filtración glomerular"], answer: "a"},
+    {q: "¿Qué parámetro de la orina se altera en la insuficiencia renal crónica durante una urografía intravenosa?", options: ["a) Densidad (hipostenuria)", "b) pH (alcalinización)", "c) Volumen (poliuria)", "d) Concentración de urobilinógeno"], answer: "a"},
+    {q: "¿Qué tipo de contraste es preferible en pacientes con riesgo de reacciones alérgicas?", options: ["a) Yodado iónico", "b) Yodado no iónico", "c) Sulfato de bario", "d) Gadolinio"], answer: "b"},
+    {q: "¿Qué hormona renal estimula la producción de glóbulos rojos?", options: ["a) Renina", "b) Eritropoyetina", "c) Aldosterona", "d) Calcitonina"], answer: "b"},
+    {q: "¿Qué estructura del riñón es responsable de la concentración final de la orina?", options: ["a) Glomérulo", "b) Túbulo colector", "c) Asa de Henle", "d) Cápsula de Bowman"], answer: "b"},
+    ],
+    "Exploraciones Especiales": [
+    {q: "En la dacriocistografía, ¿qué tipo de medio de contraste se utiliza?", options: ["a) Yodado hidrosoluble", "b) Yodado de base oleosa", "c) Gadolinio", "d) Bario"], answer: "b"},
+    {q: "¿Cuál es la principal indicación de la sialografía?", options: ["a) Diagnóstico de osteoporosis", "b) Localización de sialolitos", "c) Evaluación de fracturas mandibulares", "d) Estudio de la vesícula biliar"], answer: "b"},
+    {q: "¿Qué glándula salivar se explora mediante el conducto de Wharton?", options: ["a) Parótida", "b) Submaxilar", "c) Sublingual", "d) Tiroides"], answer: "b"},
+    {q: "En la histerosalpingografía (HSG), ¿cuál es el punto de centraje correcto?", options: ["a) Ombligo", "b) 5 cm por encima de la sínfisis púbica", "c) Cresta ilíaca", "d) Apéndice xifoides"], answer: "b"},
+    {q: "¿Qué técnica se emplea para cateterizar vasos en angiografía?", options: ["a) Técnica de Seldinger", "b) Técnica de Kocher", "c) Técnica de Heimlich", "d) Técnica de Trendelenburg"], answer: "a"},
+    {q: "¿Qué proyección se utiliza en la telerradiografía para escoliosis?", options: ["a) Lateral", "b) Posteroanterior (PA)", "c) Oblicua", "d) Axial"], answer: "b"},
+    {q: "¿Qué estructura NO se visualiza en una ortopantomografía?", options: ["a) Senos maxilares", "b) Cóndilo mandibular", "c) Columna lumbar", "d) Arcadas dentales"], answer: "c"},
+    {q: "¿Cuál es el tumor maligno más frecuente en las glándulas salivares?", options: ["a) Adenoma pleomorfo", "b) Carcinoma mucoepidermoide", "c) Tumor de Warthin", "d) Hemangioma"], answer: "b"},
+    {q: "¿Qué tipo de contraste se usa en la histerosalpingografía?", options: ["a) Liposoluble", "b) Hidrosoluble", "c) Negativo", "d) Gadolinio"], answer: "b"},
+    {q: "¿Qué técnica de densitometría es la de elección para osteoporosis?", options: ["a) TC cuantitativa", "b) DXA (Absorciometría de doble energía)", "c) Ultrasonidos", "d) RM"], answer: "b"},
+    {q: "¿Qué válvula está implicada en la obstrucción congénita del conducto nasolagrimal?", options: ["a) Válvula de Hasner", "b) Válvula ileocecal", "c) Válvula mitral", "d) Válvula aórtica"], answer: "a"},
+    {q: "¿Qué proyección se usa para visualizar el saco lagrimal en dacriocistografía?", options: ["a) Caldwell", "b) Waters", "c) Lateral", "d) Todas las anteriores"], answer: "d"},
+    {q: "¿Qué complicación es frecuente tras una histerosalpingografía?", options: ["a) Hemorragia masiva", "b) Dolor transitorio", "c) Fractura pélvica", "d) Neumotórax"], answer: "b"},
+    {q: "¿Qué arteria se cateteriza con mayor frecuencia en angiografía?", options: ["a) Femoral", "b) Radial", "c) Carótida", "d) Subclavia"], answer: "a"},
+    {q: "¿Qué porcentaje de sialolitos se localiza en la glándula submaxilar?", options: ["a) 10-20%", "b) 30-40%", "c) 50-60%", "d) 80-90%"], answer: "d"},
+    {q: "¿Qué técnica radiológica evalúa la morfología de las trompas de Falopio?", options: ["a) Colonografía", "b) Histerosalpingografía", "c) Uretrografía", "d) Mamografía"], answer: "b"},
+    {q: "¿Qué estructura se opacifica en una fistulografía?", options: ["a) Venas hepáticas", "b) Trayectos fistulosos", "c) Conductos biliares", "d) Uréteres"], answer: "b"},
+    {q: "¿Qué proyección se usa en sialografía para la glándula parótida?", options: ["a) Tangencial y lateral", "b) AP y oblicua", "c) Lateral y axial", "d) Craneocaudal"], answer: "a"},
+    {q: "¿Qué indica una puntuación T ≤ -2.5 en densitometría?", options: ["a) Osteopenia", "b) Osteoporosis", "c) Normalidad", "d) Hiperostosis"], answer: "b"},
+    {q: "¿Qué técnica permite medir la densidad mineral ósea?", options: ["a) Angiografía", "b) Densitometría", "c) Fluoroscopia", "d) Tomografía convencional"], answer: "b"},
+  
+    {q: "En angiografía cerebral, ¿qué vaso se explora mediante cateterismo de la arteria femoral?", options: ["a) Arteria coronaria izquierda", "b) Arterias braquiocefálicas y cerebrales", "c) Arteria mesentérica superior", "d) Arteria poplítea"], answer: "b"},
+    {q: "¿Qué fase de la histerosalpingografía (HSG) evalúa el paso de contraste al peritoneo?", options: ["a) Fase arterial", "b) Fase venosa", "c) Fase de repleción completa", "d) Fase post-evacuación"], answer: "d"},
+    {q: "¿Cuál es la causa más frecuente de dacriocistitis?", options: ["a) Infección por estafilococo o estreptococo", "b) Traumatismo ocular", "c) Tumores del saco lagrimal", "d) Obstrucción congénita"], answer: "a"},
+    {q: "En una ortopantomografía, ¿qué error de posicionamiento provoca superposición del paladar con las raíces dentales superiores?", options: ["a) Mentón demasiado elevado", "b) Mentón demasiado bajo", "c) Rotación de la cabeza", "d) Movimiento durante la exposición"], answer: "b"},
+    {q: "¿Qué tipo de tumor benigno es más frecuente en las glándulas parótidas?", options: ["a) Carcinoma de células acinares", "b) Adenoma pleomorfo", "c) Linfoma", "d) Schwannoma"], answer: "b"},
+    {q: "¿Qué técnica se utiliza para visualizar la vena porta en angiografía?", options: ["a) Inyección en la arteria esplénica", "b) Inyección en la vena yugular", "c) Flebografía directa del hígado", "d) Arteriografía renal"], answer: "a"},
+    {q: "¿Qué proyección se emplea en densitometría ósea para evaluar la columna lumbar?", options: ["a) Posteroanterior (PA)", "b) Lateral", "c) Oblicua", "d) Axial"], answer: "a"},
+    {q: "¿Qué estructura NO se debe incluir en el área de análisis de una densitometría de cadera?", options: ["a) Cabeza femoral", "b) Cuello femoral", "c) Rama isquiopubiana", "d) Trocánter mayor"], answer: "c"},
+    {q: "¿Qué indicación es válida para una fistulografía?", options: ["a) Evaluar fístulas postquirúrgicas", "b) Diagnosticar osteoporosis", "c) Visualizar el conducto de Wirsung", "d) Estudiar malformaciones uterinas"], answer: "a"},
+    {q: "¿Qué parámetro se utiliza para diagnosticar osteoporosis en mujeres posmenopáusicas mediante densitometría?", options: ["a) Puntuación Z", "b) Puntuación T", "c) Índice de masa corporal (IMC)", "d) Densidad ósea volumétrica (g/cm³)"], answer: "b"},
+    {q: "¿Qué contraindicación es ABSOLUTA para una histerosalpingografía?", options: ["a) Alergia al yodo", "b) Embarazo", "c) Regla reciente", "d) Antecedentes de cirugía pélvica"], answer: "b"},
+    {q: "¿Qué técnica de imagen ha reducido el uso de la sialografía en la actualidad?", options: ["a) Radiografía convencional", "b) TAC y RM", "c) Ultrasonido Doppler", "d) Gammagrafía ósea"], answer: "b"},
+    {q: "¿Qué proyección se utiliza en la telerradiografía para evaluar la curvatura lateral de la columna?", options: ["a) Lateral", "b) Posteroanterior (PA)", "c) Oblicua", "d) Axial"], answer: "b"},
+    {q: "¿Qué tipo de haz se emplea en ortopantomografía moderna?", options: ["a) Haz en abanico con detector múltiple", "b) Haz lineal con colimador estrecho", "c) Haz divergente sin colimación", "d) Haz pulsado con filtro de aluminio"], answer: "a"},
+    {q: "¿Qué complicación puede ocurrir si no se purga el catéter en una angiografía?", options: ["a) Extravasación de contraste", "b) Formación de coágulos", "c) Reacción alérgica", "d) Perforación arterial"], answer: "b"},
+    {q: "¿Qué estructura anatómica se visualiza en una sialografía de la glándula sublingual?", options: ["a) Conducto de Stenon", "b) Conducto de Wharton", "c) Conductos de Rivinus", "d) Conducto cístico"], answer: "c"},
+    {q: "¿Qué técnica es alternativa a la flebografía para diagnosticar trombosis venosa profunda?", options: ["a) Radiografía simple", "b) Ecografía Doppler", "c) Gammagrafía", "d) Tomografía convencional"], answer: "b"},
+    {q: "¿Qué proyección requiere rotación interna de 15-30° en densitometría de cadera?", options: ["a) Columna lumbar", "b) Fémur proximal", "c) Antebrazo", "d) Cuerpo entero"], answer: "b"},
+    {q: "¿Qué parámetro se mide en la absorciometría de doble energía (DXA)?", options: ["a) Densidad mineral ósea (DMO)", "b) Flujo sanguíneo cerebral", "c) Presión intraarticular", "d) Tamaño de los osteofitos"], answer: "a"},
+    {q: "¿Qué patología se asocia a un patrón en 'ristra de morcilla' en sialografía?", options: ["a) Sialolitiasis", "b) Sialodocistitis", "c) Tumor de Warthin", "d) Adenoma pleomorfo"], answer: "b"},
+  ],
+    "Mamografías": [
+    {q: "¿Qué estructura anatómica de la mama está formada por tejido conectivo y se extiende hasta la piel?", options: ["a) Ligamentos de Cooper", "b) Fascia retromamaria", "c) Senos galactóforos", "d) Acinos lobulillares"], answer: "a"},
+    {q: "¿Cuál es el principal objetivo de la compresión mamográfica?", options: ["a) Reducir la dosis de radiación", "b) Separar tejidos para mejorar la resolución", "c) Ambas son correctas", "d) Ninguna es correcta"], answer: "c"},
+    {q: "¿Qué proyección mamográfica visualiza mejor la cola axilar de la mama?", options: ["a) Cráneo-caudal (CC)", "b) Oblicua medio-lateral (OML)", "c) Latero-medial (LM)", "d) Axilar (CC exagerada)"], answer: "d"},
+    {q: "¿Qué tipo de mamografía utiliza un detector de fósforo-silicio amorfo?", options: ["a) Convencional analógica", "b) Digital indirecta", "c) Digital directa", "d) Tomosíntesis"], answer: "c"},
+    {q: "¿En qué fase del ciclo menstrual se recomienda realizar la mamografía para mayor comodidad y precisión?", options: ["a) Fase menstrual", "b) Fase preovulatoria posmenstrual", "c) Fase lútea", "d) Cualquier fase es igual"], answer: "b"},
+    {q: "¿Qué técnica mamográfica permite reconstrucciones tridimensionales con cortes de 1 mm?", options: ["a) Mamografía digital directa", "b) Tomosíntesis", "c) Ecografía mamaria", "d) Galactografía"], answer: "b"},
+    {q: "¿Qué proyección se utiliza para evaluar lesiones en la porción medial de la mama?", options: ["a) Proyección del valle (surco intermamario)", "b) Cráneo-caudal estándar", "c) Latero-medial", "d) Oblicua medio-lateral"], answer: "a"},
+    {q: "¿Qué característica de las microcalcificaciones es más sospechosa de malignidad?", options: ["a) Forma redondeada y tamaño uniforme", "b) Distribución lineal o ramificada", "c) Menos de 5 por cada 2 cm", "d) Baja densidad"], answer: "b"},
+    {q: "¿Qué categoría BIRADS indica hallazgos probablemente benignos que requieren control a los 6 meses?", options: ["a) BIRADS 0", "b) BIRADS 2", "c) BIRADS 3", "d) BIRADS 4"], answer: "c"},
+    {q: "¿Qué técnica se emplea para biopsiar microcalcificaciones no palpables?", options: ["a) Punción-aspiración con aguja fina (PAAF)", "b) Biopsia con aguja gruesa (BAG) guiada por estereotaxia", "c) Galactografía", "d) RM mamaria"], answer: "b"},
+    {q: "¿Qué dispositivo se utiliza para marcar lesiones no palpables antes de la cirugía?", options: ["a) Catéter de nefrostomía", "b) Arpón localizador", "c) Sonda Foley", "d) Clamp de Brodney"], answer: "b"},
+    {q: "¿Qué técnica intervencionista está indicada para estudiar secreción patológica del pezón?", options: ["a) Biopsia escisional", "b) Galactografía", "c) Elastografía", "d) Tomosíntesis"], answer: "b"},
+    {q: "¿Qué categoría BIRADS implica alta sospecha de malignidad (>95%)?", options: ["a) BIRADS 4c", "b) BIRADS 5", "c) BIRADS 6", "d) BIRADS 3"], answer: "b"},
+    {q: "¿Qué tipo de aguja se utiliza en una biopsia con aguja gruesa (BAG)?", options: ["a) 20-25 G", "b) 14 G", "c) 27 G", "d) 30 G"], answer: "b"},
+    {q: "¿Qué técnica de imagen es preferible para guiar biopsias en lesiones quísticas?", options: ["a) Mamografía", "b) Ecografía", "c) RM", "d) Galactografía"], answer: "b"},
+    {q: "¿Qué tumor benigno mamario se asocia con calcificaciones en 'palomitas de maíz'?", options: ["a) Papiloma intraductal", "b) Fibroadenoma", "c) Quiste simple", "d) Carcinoma lobulillar"], answer: "b"},
+    {q: "¿Qué patología mamaria es más frecuente en mujeres menores de 30 años?", options: ["a) Carcinoma ductal infiltrante", "b) Fibroadenoma", "c) Mastitis crónica", "d) Enfermedad de Paget"], answer: "b"},
+    {q: "¿Qué característica en mamografía sugiere cáncer de mama?", options: ["a) Masa bien delimitada y redondeada", "b) Microcalcificaciones dispersas y redondas", "c) Masa espiculada con bordes irregulares", "d) Densidad homogénea simétrica"], answer: "c"},
+    {q: "¿Qué tipo de cáncer de mama es el más frecuente?", options: ["a) Carcinoma lobulillar", "b) Carcinoma ductal (90%)", "c) Enfermedad de Paget", "d) Tumor filodes"], answer: "b"},
+    {q: "¿Qué anomalía congénita implica la ausencia de pezón?", options: ["a) Polimastía", "b) Atelia", "c) Pezón ectópico", "d) Ginecomastía"], answer: "b"},
+    {q: "¿Qué patología inflamatoria mamaria es común durante la lactancia?", options: ["a) Mastitis puerperal", "b) Mastopatía fibroquística", "c) Ginecomastía", "d) Necrosis grasa"], answer: "a"},
+    {q: "¿Qué técnica es útil para diferenciar entre mastitis crónica y cáncer de mama?", options: ["a) Mamografía", "b) Biopsia", "c) Ecografía", "d) Todas las anteriores"], answer: "d"},
+    {q: "¿Qué parámetro se evalúa para determinar la calidad técnica en una proyección oblicua?", options: ["a) Visualización del músculo pectoral mayor", "b) Inclusión de la columna vertebral", "c) Simetría bilateral perfecta", "d) Ausencia de artefactos"], answer: "a"},
+    {q: "¿Qué proyección se utiliza para magnificar microcalcificaciones?", options: ["a) Cráneo-caudal estándar", "b) Proyección con compresión puntual y aumento", "c) Latero-medial", "d) Axilar"], answer: "b"},
+    {q: "¿Qué técnica de imagen es obligatoria en el cribado de pacientes con alto riesgo genético de cáncer de mama?", options: ["a) Mamografía digital", "b) RM mamaria con contraste", "c) Ecografía Doppler", "d) Galactografía"], answer: "b"},
+    {q: "¿Qué factor NO influye en la dosis de radiación en mamografía?", options: ["a) Grosor de la mama", "b) Tipo de detector (analógico/digital)", "c) Color de la piel de la paciente", "d) Uso de compresión"], answer: "c"},
+    {q: "¿Qué hallazgo en una mamografía justifica una biopsia inmediata según BIRADS?", options: ["a) BIRADS 2", "b) BIRADS 3", "c) BIRADS 4", "d) BIRADS 5"], answer: "d"},
+    {q: "¿Qué técnica es preferible para evaluar la multifocalidad en cáncer de mama?", options: ["a) Mamografía", "b) RM mamaria", "c) Ecografía", "d) Tomosíntesis"], answer: "b"},
+    {q: "¿Qué proyección mamográfica es esencial para comparar tejidos en controles anuales?", options: ["a) Cráneo-caudal", "b) Oblicua medio-lateral", "c) Ambas son necesarias", "d) Latero-medial"], answer: "c"},
+    {q: "¿Qué estructura anatómica debe visualizarse en una proyección cráneo-caudal bien realizada?", options: ["a) Pectoral mayor en la parte posterior", "b) Columna vertebral", "c) Pulmón ipsilateral", "d) Arterias mamarias internas"], answer: "a"},
+    {q: "¿Qué técnica ecográfica evalúa la elasticidad de las lesiones mamarias para diferenciar benignas de malignas?", options: ["a) Doppler color", "b) Elastografía", "c) Modo M", "d) Ecografía 3D"], answer: "b"},
+    {q: "En la RM mamaria con contraste, ¿qué característica de una lesión sugiere malignidad?", options: ["a) Reforzamiento lento y progresivo", "b) Reforzamiento rápido con lavado rápido (wash-out)", "c) Ausencia de captación de contraste", "d) Morfología redondeada y bordes lisos"], answer: "b"},
+    {q: "¿Qué proyección mamográfica se utiliza en pacientes con implantes para visualizar mejor el tejido mamario nativo?", options: ["a) Cráneo-caudal estándar", "b) Método Eklund (compresión desplazando el implante)", "c) Latero-medial", "d) Oblicua medio-lateral"], answer: "b"},
+    {q: "¿Qué tipo de microcalcificaciones son típicamente benignas?", options: ["a) Lineales y ramificadas", "b) Vermiculares", "c) Redondeadas y gruesas ('en palomitas de maíz')", "d) Amorfas y agrupadas"], answer: "c"},
+    {q: "¿Qué tumor mamario benigno puede aumentar de tamaño durante el embarazo?", options: ["a) Carcinoma ductal in situ", "b) Fibroadenoma", "c) Quiste simple", "d) Papiloma intraductal"], answer: "b"},
+    {q: "¿Qué categoría BIRADS se asigna a una lesión con morfología benigna pero que requiere seguimiento a corto plazo?", options: ["a) BIRADS 1", "b) BIRADS 2", "c) BIRADS 3", "d) BIRADS 4"], answer: "c"},
+    {q: "¿Qué patología mamaria se caracteriza por secreción sanguinolenta del pezón y puede asociarse a papilomas intraductales?", options: ["a) Mastitis puerperal", "b) Enfermedad de Paget", "c) Ectasia ductal", "d) Necrosis grasa"], answer: "c"},
+    {q: "¿Qué hallazgo en mamografía es típico de la enfermedad de Paget del pezón?", options: ["a) Microcalcificaciones difusas", "b) Retracción cutánea y ulceración del pezón", "c) Masa bien delimitada en cuadrante superior externo", "d) Quistes múltiples"], answer: "b"},
+    {q: "¿Qué técnica de biopsia percutánea permite la obtención de muestras histológicas más grandes y precisas?", options: ["a) Punción-aspiración con aguja fina (PAAF)", "b) Biopsia con aguja gruesa (BAG)", "c) Galactografía", "d) Escisión quirúrgica abierta"], answer: "b"},
+    {q: "¿Qué parámetro técnico es esencial para garantizar una mamografía de calidad en la proyección oblicua medio-lateral?", options: ["a) Inclusión del músculo pectoral mayor hasta el nivel del pezón", "b) Visualización de la columna vertebral", "c) Compresión mínima para evitar molestias", "d) Uso de contraste yodado"], answer: "a"},
+    ],
+    "Pelvis": [
+      {q: "¿Qué huesos forman la pelvis?", options: ["a) Fémur, tibia y peroné.", "b) Coxales, sacro y cóccix.", "c) Íleon, isquion y pubis.", "d) Sacro, cóccix y fémur."], answer: "b"},
+      {q: "¿Qué huesos forman los huesos coxales?", options: ["a) Sacro y cóccix.", "b) Íleon, isquion y pubis.", "c) Fémur, tibia y peroné.", "d) Alas del sacro y palas de los huesos ilíacos."], answer: "b"},
+      {q: "¿Cómo se divide artificialmente la pelvis?", options: ["a) Por la línea que une las crestas ilíacas.", "b) Por la línea que une el promontorio del sacro con la sínfisis del pubis.", "c) Por el plano que pasa por los agujeros obturadores.", "d) Por la línea que une los trocánteres mayores."], answer: "b"},
+      {q: "¿Qué forma la pelvis mayor?", options: ["a) La parte inferior del hueso ilíaco, isquion y pubis.", "b) Las alas del sacro y las palas de los huesos ilíacos.", "c) El sacro y el cóccix.", "d) El fémur, la tibia y el peroné."], answer: "b"},
+      {q: "¿Cuál de las siguientes afirmaciones es correcta sobre la pelvis femenina en comparación con la masculina?", options: ["a) Es más estrecha y alargada.", "b) Es más ancha y plana.", "c) Tiene las mismas dimensiones.", "d) Es más profunda."], answer: "b"},
+      {q: "¿Cuál de las siguientes NO es una región anatómica de la pelvis?", options: ["a) Región púbica.", "b) Región glútea.", "c) Región femoral.", "d) Región sacra."], answer: "c"},
+      {q: "¿Qué tipo de proyecciones radiológicas se deben realizar como mínimo debido a la complejidad de la pelvis?", options: ["a) Una proyección AP.", "b) Una proyección lateral.", "c) Dos proyecciones ortogonales entre sí.", "d) Proyecciones oblicuas."], answer: "c"},
+      {q: "¿Cuál es el objetivo principal de la proyección anteroposterior de pelvis?", options: ["a) Visualizar las alas ilíacas.", "b) Diagnosticar la escoliosis.", "c) Diagnosticar artrosis, enfermedad de Paget, traumatismos y metástasis.", "d) Valorar la parte inferior del anillo pélvico."], answer: "c"},
+      {q: "En la proyección anteroposterior de pelvis, ¿cuántos grados se rotan internamente los pies?", options: ["a) 5 grados.", "b) 10 grados.", "c) 15 grados.", "d) 25 grados."], answer: "c"},
+      {q: "¿Qué debe incluirse en una radiografía anteroposterior de pelvis de calidad?", options: ["a) Solo la sínfisis del pubis.", "b) Toda la pelvis, las últimas vértebras lumbares y la porción proximal de ambos fémures.", "c) Solo los agujeros obturadores.", "d) Solo las alas ilíacas."], answer: "b"},
+      {q: "¿Para qué se realiza la proyección oblicua anteroposterior de ala ilíaca?", options: ["a) Para ver fracturas de fémur.", "b) Para visualizar la anatomía de las alas ilíacas.", "c) Para valorar la articulación sacroilíaca.", "d) Para ver la sínfisis del pubis."], answer: "c"},
+      {q: "En la proyección oblicua anteroposterior de ala ilíaca, ¿cuántos grados se eleva al paciente?", options: ["a) 25 grados.", "b) 30 grados.", "c) 45 grados.", "d) 60 grados."], answer: "c"},
+      {q: "¿Cuál es el objetivo de la proyección de Risser?", options: ["a) Ver fracturas de pelvis.", "b) Visualizar la articulación de la cadera.", "c) Ver el término de crecimiento en el tratamiento de la escoliosis.", "d) Valorar el anillo pélvico."], answer: "c"},
+      {q: "¿Qué proyección se utiliza para ver fracturas, procesos degenerativos y metástasis en la pelvis?", options: ["a) Proyección de Risser.", "b) Proyección oblicua.", "c) Proyección lateral de pelvis.", "d) Proyección anteroposterior."], answer: "d"},
+      {q: "En la proyección lateral de pelvis, ¿dónde se centra el rayo central?", options: ["a) En la sínfisis del pubis.", "b) En las crestas ilíacas.", "c) 5 cm por encima del trocánter mayor.", "d) En el agujero obturador."], answer: "c"},
+      {q: "¿Qué proyección permite valorar la parte superior y posterior del anillo pélvico en traumatismos?", options: ["a) Proyección outlet.", "b) Proyección inlet.", "c) Proyección obturatriz.", "d) Proyección de Risser."], answer: "b"},
+      {q: "En la proyección inlet, ¿hacia dónde se angula el tubo de rayos X?", options: ["a) Hacia la cabeza del paciente.", "b) Hacia los pies del paciente.", "c) Lateralmente.", "d) No se angula."], answer: "a"},
+      {q: "¿Qué proyección permite valorar la parte inferior y anterior del anillo pélvico en traumatismos?", options: ["a) Proyección inlet.", "b) Proyección outlet.", "c) Proyección obturatriz.", "d) Proyección lateral."], answer: "b"},
+      {q: "En la proyección outlet, ¿cuál es la angulación del tubo de rayos X en hombres?", options: ["a) 10-20 grados cranealmente.", "b) 20-35 grados cranealmente.", "c) 30-45 grados cranealmente.", "d) 45-60 grados cranealmente."], answer: "b"},
+      {q: "¿Para qué sirve la proyección obturatriz?", options: ["a) Para valorar la parte superior del anillo pélvico.", "b) Para valorar la columna anterior y la pared posterior del acetábulo.", "c) Para ver las alas ilíacas.", "d) Para ver fracturas de fémur."], answer: "b"},
+      {q: "¿Qué es la radiopelvimetría?", options: ["a) La medición radiológica de los diámetros del fémur.", "b) La medición radiológica de los diámetros de la pelvis.", "c) Un estudio de la articulación de la cadera.", "d) Una técnica para ver fracturas de tibia y peroné."], answer: "b"},
+      {q: "¿En qué situación la radiopelvimetría posee algún valor?", options: ["a) Al inicio del embarazo.", "b) Durante el primer trimestre.", "c) Al final del embarazo.", "d) Iniciado el parto."], answer: "c"},
+      {q: "¿Cuál de las siguientes NO es una indicación de la radiopelvimetría?", options: ["a) Problemas en pelvis o miembros inferiores.", "b) Sospecha de feto de gran volumen.", "c) Sospecha de desproporción fetopélvica.", "d) Sospecha de fractura de clavícula."], answer: "d"},
+      {q: "¿Qué estructuras óseas constituyen la articulación de la cadera?", options: ["a) Tibia y peroné.", "b) Fémur y rótula.", "c) Acetábulo y cabeza femoral.", "d) Calcáneo y astrágalo."], answer: "c"},
+      {q: "¿Qué movimientos permite la articulación de la cadera?", options: ["a) Flexión y extensión.", "b) Abducción y aducción.", "c) Circulares.", "d) Todos los anteriores."], answer: "d"},
+      {q: "En la proyección anteroposterior de cadera, ¿cuántos grados se rota el pie hacia dentro?", options: ["a) 5-10 grados.", "b) 10-15 grados.", "c) 15-20 grados.", "d) 20-25 grados."], answer: "c"},
+      {q: "¿Dónde se centra el rayo central en la proyección anteroposterior de cadera?", options: ["a) En la sínfisis del pubis.", "b) En la espina ilíaca.", "c) 2-3 cm distal al punto medio entre la sínfisis púbica y la espina ilíaca.", "d) En el trocánter mayor."], answer: "c"},
+      {q: "¿Qué debe visualizarse en una radiografía anteroposterior de cadera de calidad?", options: ["a) Solo la cabeza del fémur.", "b) La cabeza, el cuello y un tercio proximal del fémur.", "c) Solo el acetábulo.", "d) La pelvis completa."], answer: "b"},
+      {q: "¿Cuándo se utiliza la proyección lateral o falsa axial de cadera?", options: ["a) Para ver fracturas de pelvis.", "b) Ante la sospecha de fractura y cuando el paciente no puede estar en decúbito supino.", "c) Para ver la rótula.", "d) Para ver la tibia y el peroné."], answer: "b"},
+      {q: "¿En qué se diferencia la proyección de Friedman de la lateral o falsa axial?", options: ["a) En la posición del paciente.", "b) En la angulación del rayo central.", "c) En el centrado del rayo.", "d) En los criterios de calidad."], answer: "a"},
+      {q: "¿Cuál es otra denominación para la proyección anteroposterior axial de cuellos femorales?", options: ["a) Proyección de Von Rosen.", "b) Proyección de Dunn.", "c) Postura de la rana o proyección de Lowestein.", "d) Proyección de Cleaves."], answer: "c"},
+      {q: "¿Para qué es útil la proyección de Lowestein?", options: ["a) Para ver fracturas de cadera en adultos.", "b) Para ver luxación congénita de cadera.", "c) Para ver anormalidades en caderas de niños pequeños.", "d) Para ver la esfericidad de la cabeza femoral."], answer: "c"},
+      {q: "En la proyección de Von Rosen, ¿cuál es la posición del paciente?", options: ["a) Decúbito prono.", "b) Decúbito lateral.", "c) Decúbito supino con rotación interna de pies a 15°.", "d) Sentado."], answer: "c"},
+      {q: "¿Qué proyección se emplea para visualizar displasia o luxación congénita de caderas?", options: ["a) Proyección de Dunn.", "b) Proyección de Friedman.", "c) Proyección de Von Rosen.", "d) Proyección de Lowestein."], answer: "c"},
+      {q: "¿Para qué se utiliza la proyección de Dunn?", options: ["a) Para valorar la esfericidad de la cabeza femoral.", "b) Para ver fracturas de fémur.", "c) Para ver la rótula.", "d) Para ver la tibia y el peroné."], answer: "a"},
+      {q: "¿Cuál es el hueso más largo del cuerpo?", options: ["a) La tibia.", "b) El peroné.", "c) El fémur.", "d) El coxal."], answer: "c"},
+      {q: "¿Cuáles son las prominencias de la epífisis proximal del fémur?", options: ["a) Cóndilos.", "b) Cuello y trocánteres.", "c) Platillos tibiales.", "d) Maléolos."], answer: "b"},
+      {q: "¿Qué huesos forman la articulación de la rodilla?", options: ["a) Fémur y tibia.", "b) Fémur, tibia y peroné.", "c) Tibia y peroné.", "d) Fémur y rótula."], answer: "b"},
+      {q: "¿Qué son los meniscos?", options: ["a) Huesos sesamoideos.", "b) Ligamentos de la rodilla.", "c) Cartílagos fibrosos intraarticulares.", "d) Tendones de la pierna."], answer: "c"},
+      {q: "¿Cuál de los siguientes NO es un hueso del pie?", options: ["a) Astrágalo.", "b) Calcáneo.", "c) Escafoides.", "d) Rótula."], answer: "c"}
+    ],
+    "Abdomen": [
+      {q: "¿Cuáles son los límites anatómicos del abdomen?", options: ["a) Desde las costillas hasta las crestas ilíacas.", "b) Desde el apéndice xifoides hasta la sínfisis púbica.", "c) Desde las cúpulas diafragmáticas hasta la pelvis.", "d) Desde el ombligo hasta las vértebras lumbares."], answer: "c"},
+      {q: "¿Cómo se divide topográficamente el abdomen en cuadrantes?", options: ["a) Por planos sagitales y coronales.", "b) Por planos horizontales y verticales.", "c) Por un plano sagital y otro transversal que pasan por el ombligo.", "d) Por planos oblicuos que se cruzan en el mesogastrio."], answer: "c"},
+      {q: "¿Cuántas regiones se utilizan en la división más detallada del abdomen?", options: ["a) 4", "b) 6", "c) 9", "d) 12"], answer: "c"},
+      {q: "¿Qué plano horizontal se traza a nivel de los novenos cartílagos costales?", options: ["a) Plano transverso inferior.", "b) Plano sagital.", "c) Plano transpilórico.", "d) Plano intertubercular."], answer: "c"},
+      {q: "¿Qué órganos se encuentran principalmente en el hipocondrio derecho?", options: ["a) Estómago y bazo.", "b) Hígado y riñón derecho.", "c) Intestino delgado y vejiga.", "d) Páncreas y duodeno."], answer: "b"},
+      {q: "¿En qué región abdominal se localiza el apéndice?", options: ["a) Fosa ilíaca izquierda.", "b) Flanco derecho.", "c) Hipogastrio.", "d) Fosa ilíaca derecha."], answer: "d"},
+      {q: "¿Qué factor NO influye en la disposición de los órganos abdominales?", options: ["a) Hábito corporal.", "b) Posición del paciente.", "c) Fase de la respiración.", "d) Color de la piel."], answer: "d"},
+      {q: "¿Qué densidad radiológica corresponde al aire en el tubo digestivo?", options: ["a) Densidad hueso.", "b) Densidad agua.", "c) Densidad grasa.", "d) Densidad aire."], answer: "d"},
+      {q: "¿Qué estructuras óseas se visualizan en una radiografía de abdomen?", options: ["a) Solo la columna vertebral.", "b) Costillas, columna, pelvis y fémures proximales.", "c) Solo los huesos ilíacos.", "d) Costillas y fémur."], answer: "b"},
+      {q: "¿Dónde se origina el músculo recto mayor?", options: ["a) En la pared posterior del abdomen.", "b) En la pared lateral del abdomen.", "c) En la pared anterior del abdomen.", "d) En la pelvis."], answer: "c"},
+      {q: "¿Cuál es la membrana que envuelve la mayor parte de los órganos del abdomen?", options: ["a) Pleura.", "b) Pericardio.", "c) Peritoneo.", "d) Meninge."], answer: "c"},
+      {q: "¿Cómo se divide el peritoneo?", options: ["a) En capas interna y externa.", "b) En peritoneo parietal y visceral.", "c) En espacios intra y extraperitoneales.", "d) En fascias renales."], answer: "b"},
+      {q: "¿Cuál de los siguientes órganos es intraperitoneal?", options: ["a) Riñón.", "b) Colon ascendente.", "c) Vejiga.", "d) Hígado."], answer: "d"},
+      {q: "¿Cuál de los siguientes órganos es retroperitoneal?", options: ["a) Estómago.", "b) Bazo.", "c) Uréter.", "d) Intestino delgado."], answer: "c"},
+      {q: "¿Cómo se observa el hígado en una radiografía de abdomen?", options: ["a) Como una sombra radiotransparente.", "b) Como una opacidad en la parte derecha.", "c) Como una estructura que no se visualiza.", "d) Como una línea oblicua."], answer: "b"},
+      {q: "¿Por qué el intestino delgado no suele visualizarse en radiografías?", options: ["a) Por su gran tamaño.", "b) Por su escaso contenido gaseoso.", "c) Porque está detrás del intestino grueso.", "d) Porque es retroperitoneal."], answer: "b"},
+      {q: "¿Cómo aparecen las heces en una radiografía?", options: ["a) Con densidad aire.", "b) Con densidad hueso.", "c) Con densidad heterogénea.", "d) Con densidad grasa."], answer: "c"},
+      {q: "¿Qué debe incluir una radiografía de abdomen de buena calidad?", options: ["a) Solo las cúpulas diafragmáticas.", "b) Desde las cúpulas diafragmáticas hasta la sínfisis del pubis.", "c) Solo la pelvis.", "d) Solo las vértebras lumbares."], answer: "b"},
+      {q: "¿Cuál es la distancia foco-placa recomendada para una radiografía de abdomen?", options: ["a) 0.5 metros.", "b) 1-1.15 metros.", "c) 2 metros.", "d) 1.5 metros."], answer: "b"},
+      {q: "¿Por qué el tiempo de exposición debe ser corto?", options: ["a) Para reducir la dosis de radiación.", "b) Para evitar la borrosidad por movimiento.", "c) Para mejorar el contraste.", "d) Para visualizar mejor las calcificaciones."], answer: "b"},
+      {q: "¿Cuál es la posición del paciente en la proyección anteroposterior de abdomen?", options: ["a) Decúbito lateral.", "b) Bipedestación.", "c) Decúbito supino.", "d) Decúbito prono."], answer: "c"},
+      {q: "¿Dónde se centra el rayo central en la proyección anteroposterior de abdomen?", options: ["a) En el apéndice xifoides.", "b) En la sínfisis del pubis.", "c) En las crestas ilíacas.", "d) En el ombligo."], answer: "d"},
+      {q: "¿Qué se debe visualizar en una radiografía de abdomen anteroposterior?", options: ["a) Solo el hígado y el bazo.", "b) Estructuras óseas, órganos, masas, calcificaciones, gases y materia fecal.", "c) Solo el intestino grueso.", "d) Solo los riñones y la vejiga."], answer: "b"},
+      {q: "¿Por qué se realiza la radiografía de abdomen en bipedestación?", options: ["a) Para ver mejor el hígado.", "b) Para separar el gas y el líquido por gravedad.", "c) Para ver la vejiga.", "d) Para evitar la borrosidad."], answer: "b"},
+      {q: "¿Qué es importante visualizar en la radiografía de abdomen en bipedestación?", options: ["a) Solo el colon.", "b) Niveles hidroaéreos y aire libre en peritoneo.", "c) Solo los riñones.", "d) El páncreas."], answer: "b"},
+      {q: "¿En qué posición se coloca el paciente para la radiografía de abdomen en decúbito lateral izquierdo?", options: ["a) Con los brazos a los lados del cuerpo.", "b) Con los brazos por encima del diafragma y rodillas flexionadas.", "c) Con las piernas extendidas.", "d) En decúbito lateral derecho."], answer: "b"},
+      {q: "¿Qué se visualiza especialmente bien en el decúbito lateral izquierdo?", options: ["a) El recto.", "b) El aire intraperitoneal en la zona hepática.", "c) La vejiga.", "d) El bazo."], answer: "b"},
+      {q: "¿Cuándo se realiza la radiografía de abdomen en decúbito prono?", options: ["a) Para ver mejor el hígado.", "b) Para desplazar el aire hacia el recto.", "c) Para ver el intestino delgado.", "d) Para ver los riñones."], answer: "b"},
+      {q: "¿Dónde se centra el rayo central en la proyección lateral de abdomen?", options: ["a) En la sínfisis del pubis.", "b) En las crestas ilíacas.", "c) A mitad de camino entre la línea axilar media y la superficie anterior del abdomen.", "d) En el ombligo."], answer: "c"},
+      {q: "¿Qué se puede visualizar en la proyección lateral de abdomen?", options: ["a) Solo el hígado.", "b) Calcificaciones y tumoraciones abdominales.", "c) Solo el intestino delgado.", "d) Solo la vejiga."], answer: "b"},
+      {q: "¿Cuándo se realiza la proyección lateral en decúbito supino con rayo horizontal?", options: ["a) Cuando el paciente puede estar de pie.", "b) Cuando el paciente no puede realizar los decúbitos laterales ni la bipedestación.", "c) Para ver mejor el hígado.", "d) Para ver el bazo."], answer: "b"},
+      {q: "¿Qué proyección se debe realizar siempre ante un dolor abdominal?", options: ["a) Solo la AP supino.", "b) Radiografía de tórax en bipedestación.", "c) Solo la lateral.", "d) Solo la prono."], answer: "b"},
+      {q: "¿Qué debe incluir la colimación en una radiografía de abdomen AP supino?", options: ["a) Solo el hígado.", "b) Desde el diafragma hasta la sínfisis del pubis.", "c) Solo la pelvis.", "d) Solo el intestino grueso."], answer: "b"},
+      {q: "¿Qué indica la ausencia de rotación en una radiografía de abdomen?", options: ["a) Que el paciente se movió.", "b) Que las apófisis espinosas están en el centro de los cuerpos vertebrales y las alas ilíacas son simétricas.", "c) Que el contraste es adecuado.", "d) Que la penetración es insuficiente."], answer: "b"},
+      {q: "¿Qué se debe observar en la radiografía lateral de abdomen?", options: ["a) Solo el hígado.", "b) El espacio prevertebral.", "c) Solo el intestino delgado.", "d) Solo la vejiga."], answer: "b"},
+      {q: "¿Cuál de las siguientes NO es una densidad cálcica frecuente en abdomen superior?", options: ["a) Litiasis ureteral.", "b) Litiasis biliar.", "c) Calcificaciones pancreáticas.", "d) Calcificaciones esplénicas."], answer: "a"},
+      {q: "¿Cuál de las siguientes es una densidad cálcica frecuente en la pelvis?", options: ["a) Calcificaciones hepáticas.", "b) Calcificaciones suprarrenales.", "c) Flebolitos.", "d) Calcificaciones aórticas."], answer: "c"},
+      {q: "¿Qué es el divertículo de Meckel?", options: ["a) Una obstrucción intestinal.", "b) Un tipo de colitis.", "c) Un pequeño apéndice en el intestino delgado.", "d) Una calcificación en la vesícula biliar."], answer: "c"}
+    ],
+    "Tórax": [
+      {q: "¿Cuál es el estudio radiológico que se realiza con mayor frecuencia tanto en urgencias como en radiología general?", options: ["a) Radiografía de abdomen.", "b) Radiografía de tórax.", "c) Radiografía de pelvis.", "d) Radiografía de cráneo."], answer: "b"},
+      {q: "¿Cuál es la principal utilidad de la radiografía de tórax?", options: ["a) Diagnóstico de enfermedades óseas.", "b) Diagnóstico de enfermedades cardiovasculares y pulmonares.", "c) Evaluación de traumatismos abdominales.", "d) Detección de cuerpos extraños en el esófago."], answer: "b"},
+      {q: "¿Qué preparación debe tener el paciente para una radiografía de tórax?", options: ["a) Estar en ayunas.", "b) Desnudo de cintura para arriba.", "c) Con ropa cómoda.", "d) Sin objetos metálicos."], answer: "d"},
+      {q: "¿Cuál de las siguientes NO es una indicación para la radiografía de tórax?", options: ["a) Sospecha de enfermedad pulmonar obstructiva crónica.", "b) Dolor torácico en punta de costado.", "c) Traumatismo craneoencefálico.", "d) Sospecha de neumonía."], answer: "c"},
+      {q: "¿Qué estructura anatómica es una vía de paso común al aparato respiratorio y digestivo?", options: ["a) Laringe.", "b) Tráquea.", "c) Faringe.", "d) Esófago."], answer: "c"},
+      {q: "¿Dónde se localiza la laringe?", options: ["a) En el tórax.", "b) En el abdomen.", "c) En el cuello.", "d) En la base del cráneo."], answer: "c"},
+      {q: "¿Qué estructura se bifurca para dar lugar a los bronquios principales?", options: ["a) Faringe.", "b) Laringe.", "c) Tráquea.", "d) Esófago."], answer: "c"},
+      {q: "¿Cuál es la función del árbol bronquial?", options: ["a) Producir moco.", "b) Realizar el intercambio gaseoso.", "c) Conducir el aire hasta los alvéolos.", "d) Sostener el parénquima pulmonar."], answer: "c"},
+      {q: "¿Qué membrana serosa recubre los pulmones?", options: ["a) Pericardio.", "b) Pleura.", "c) Peritoneo.", "d) Meninge."], answer: "b"},
+      {q: "¿Dónde se encuentra el mediastino?", options: ["a) Debajo del diafragma.", "b) Entre ambos pulmones.", "c) Detrás del esternón.", "d) Delante de la columna vertebral."], answer: "b"},
+      {q: "¿Cuáles son los orificios de entrada a las fosas nasales?", options: ["a) Coanas.", "b) Agujeros piriformes.", "c) Adenoides.", "d) Trompas de Eustaquio."], answer: "b"},
+      {q: "¿Qué estructura comunica las fosas nasales con la nasofaringe?", options: ["a) Agujeros piriformes.", "b) Coanas.", "c) Adenoides.", "d) Vestíbulo nasal."], answer: "b"},
+      {q: "¿Cuál es la función de la pituitaria roja?", options: ["a) Olfativa.", "b) Respiratoria (producción de moco).", "c) Defensiva.", "d) Calentar el aire."], answer: "b"},
+      {q: "¿Cuáles son los senos paranasales de mayor tamaño?", options: ["a) Senos frontales.", "b) Senos etmoidales.", "c) Senos maxilares.", "d) Seno esfenoidal."], answer: "c"},
+      {q: "¿Qué ocurre si se obstruyen los senos nasales?", options: ["a) Se produce sequedad.", "b) Se llenan de aire.", "c) Se llenan de moco o pus.", "d) No ocurre nada."], answer: "c"},
+      {q: "¿Cuál es la patología de la inflamación de los senos?", options: ["a) Faringitis.", "b) Laringitis.", "c) Sinusitis.", "d) Rinitis."], answer: "c"},
+      {q: "¿Qué porción de la faringe se comunica con las fosas nasales?", options: ["a) Orofaringe.", "b) Nasofaringe.", "c) Laringofaringe.", "d) Esófago."], answer: "b"},
+      {q: "¿Cuál de las siguientes NO es una función de la faringe?", options: ["a) Deglución.", "b) Fonación.", "c) Respiración.", "d) Defensa inmunitaria."], answer: "b"},
+      {q: "¿Cuál es la longitud aproximada de la laringe?", options: ["a) 10 cm.", "b) 4 cm (o 15 cm junto con la tráquea).", "c) 20 cm.", "d) 8 cm."], answer: "b"},
+      {q: "¿Qué estructura de la laringe permite la fonación?", options: ["a) Epiglotis.", "b) Cuerdas vocales.", "c) Cartílago tiroides.", "d) Anillos cartilaginosos."], answer: "b"},
+      {q: "¿Cuánto mide aproximadamente la tráquea?", options: ["a) 5-6 cm.", "b) 20-25 cm.", "c) 12-13 cm.", "d) 8-9 cm."], answer: "c"},
+      {q: "¿Cuántos anillos cartilaginosos forman la tráquea?", options: ["a) 20-25.", "b) 5-6.", "c) 15-20.", "d) 8-9."], answer: "a"},
+      {q: "¿Qué forma tienen los cartílagos traqueales?", options: ["a) Anillos completos.", "b) Forma de C.", "c) Forma de U.", "d) Forma de S."], answer: "b"},
+      {q: "¿En qué vértebra dorsal se divide la tráquea?", options: ["a) Primera.", "b) Décima.", "c) Cuarta.", "d) Séptima."], answer: "d"},
+      {q: "¿Cuál es la función del parénquima pulmonar?", options: ["a) Conducir el aire.", "b) Sostener el árbol bronquial.", "c) Realizar el intercambio gaseoso.", "d) Producir moco."], answer: "c"},
+      {q: "¿Cuántos lóbulos tiene el pulmón derecho?", options: ["a) Dos.", "b) Cuatro.", "c) Tres.", "d) Uno."], answer: "c"},
+      {q: "¿Qué es la respiración externa?", options: ["a) El transporte de gases por la sangre.", "b) El intercambio gaseoso a nivel alveolocapilar.", "c) El intercambio gaseoso a nivel capilotisular.", "d) La entrada y salida de aire de los pulmones."], answer: "b"},
+      {q: "¿Cuál es el ritmo respiratorio normal en adultos?", options: ["a) 8-12 respiraciones por minuto.", "b) 20-24 respiraciones por minuto.", "c) 14-18 respiraciones por minuto.", "d) 25-30 respiraciones por minuto."], answer: "c"},
+      {q: "¿Qué término se utiliza para la sensación de ahogo al respirar?", options: ["a) Bradipnea.", "b) Taquipnea.", "c) Disnea.", "d) Apnea."], answer: "c"},
+      {q: "¿Qué gas actúa sobre los quimiorreceptores del bulbo raquídeo para regular la respiración?", options: ["a) Oxígeno.", "b) Nitrógeno.", "c) Dióxido de carbono.", "d) Vapor de agua."], answer: "c"},
+      {q: "¿Con qué instrumento se miden los volúmenes pulmonares?", options: ["a) Manómetro.", "b) Espirómetro.", "c) Barómetro.", "d) Oxímetro."], answer: "b"},
+      {q: "¿Qué es el volumen de reserva inspiratoria (VRI)?", options: ["a) El aire que entra y sale en una respiración normal.", "b) El aire que se puede espirar después de una espiración normal.", "c) El aire que se puede inspirar después de una inspiración normal.", "d) El aire que queda en los pulmones después de una espiración profunda."], answer: "c"},
+      {q: "¿Qué es la capacidad vital?", options: ["a) La suma del aire corriente y el volumen residual.", "b) La suma del VRI y el VRE.", "c) La suma del aire corriente, VRI y VRE.", "d) La suma de la capacidad inspiratoria y el volumen residual."], answer: "c"},
+      {q: "¿Cuál de las siguientes NO es una función del aparato respiratorio?", options: ["a) Intercambio de gases.", "b) Regulación del equilibrio ácido-base.", "c) Almacén de glucosa.", "d) Defensa inmunitaria."], answer: "c"},
+      {q: "¿Cuáles son los límites anatómicos del mediastino?", options: ["a) Pulmones, corazón y grandes vasos.", "b) Esternón, columna vertebral, diafragma e istmo cervicotorácico.", "c) Tráquea, esófago y timo.", "d) Aorta, vena ácigos y conducto torácico."], answer: "b"},
+      {q: "¿Qué órganos se encuentran en el mediastino superior?", options: ["a) Corazón y grandes vasos.", "b) Tráquea, esófago y timo.", "c) Aorta y vena ácigos.", "d) Pulmones y pleura."], answer: "b"},
+      {q: "¿Qué densidad radiológica corresponde al parénquima pulmonar?", options: ["a) Agua.", "b) Grasa.", "c) Aire.", "d) Hueso."], answer: "c"},
+      {q: "¿Cuál es el orden sistemático para la lectura de una radiografía de tórax?", options: ["a) Hueso, partes blandas, parénquima, pleura, mediastino, hilios.", "b) Partes blandas, hueso, parénquima, pleura, mediastino, hilios.", "c) Mediastino, hilios, pleura, parénquima, hueso, partes blandas.", "d) Pleura, parénquima, hueso, partes blandas, mediastino, hilios."], answer: "a"},
+      {q: "¿Qué indica la presencia de densidad aire en las partes blandas?", options: ["a) Calcificación.", "b) Enfisema subcutáneo.", "c) Cuerpo extraño.", "d) Hematoma."], answer: "b"},
+      {q: "¿A qué altura se localiza normalmente la cúpula del diafragma?", options: ["a) 3er arco costal anterior.", "b) 10º arco costal posterior.", "c) 6º arco costal anterior.", "d) L5-S1."], answer: "c"}
+  ],
+"Ecografía": [
+  {q: "¿Qué tipo de ondas utiliza la ecografía?", options: ["a) Rayos X", "b) Rayos gamma", "c) Ultrasonidos", "d) Microondas"], answer: "c"},
+  {q: "¿Qué material se utiliza comúnmente en los cristales piezoeléctricos de los transductores?", options: ["a) Cuarzo", "b) Titanato de plomo", "c) Hierro", "d) Cobre"], answer: "b"},
+  {q: "¿Qué tipo de transductor es más utilizado en ecografía musculoesquelética?", options: ["a) Sectorial", "b) Anular", "c) Lineal", "d) Radial"], answer: "c"},
+  {q: "¿Qué propiedad física determina la velocidad del sonido en un tejido?", options: ["a) Conductividad eléctrica", "b) Densidad y compresibilidad", "c) Temperatura", "d) Humedad"], answer: "b"},
+  {q: "¿Qué ocurre cuando el haz ultrasónico incide perpendicularmente a una interfase entre dos tejidos?", options: ["a) Se refracta totalmente", "b) Se refleja totalmente", "c) Se absorbe completamente", "d) Se dispersa"], answer: "b"},
+  {q: "¿Qué frecuencia se utiliza para estudiar estructuras profundas como el abdomen?", options: ["a) 1-3 MHz", "b) 7-13 MHz", "c) 15-20 MHz", "d) 50 MHz"], answer: "a"},
+  {q: "¿Qué tipo de ecografía permite visualizar estructuras en movimiento en tiempo real?", options: ["a) Modo A", "b) Modo B", "c) Modo M", "d) Modo RT (Real Time)"], answer: "d"},
+  {q: "¿Qué efecto describe el cambio en la frecuencia del ultrasonido cuando choca con un objeto en movimiento?", options: ["a) Efecto Joule", "b) Efecto Doppler", "c) Efecto piezoeléctrico", "d) Efecto Fresnel"], answer: "b"},
+  {q: "¿Qué artefacto se produce cuando el haz ultrasónico choca con una superficie muy reflectante como una calcificación?", options: ["a) Artefacto de anisotropía", "b) Artefacto en espejo", "c) Sombra acústica", "d) Refuerzo posterior"], answer: "c"},
+  {q: "¿Qué tipo de transductor produce una imagen rectangular y es útil para estructuras superficiales?", options: ["a) Convex", "b) Sectorial", "c) Lineal", "d) Anular"], answer: "c"},
+  {q: "¿Qué parámetro técnico compensa la atenuación del sonido en los tejidos?", options: ["a) Frecuencia", "b) Ganancia", "c) Impedancia", "d) Rango dinámico"], answer: "b"},
+  {q: "¿Qué tipo de onda ultrasónica se utiliza en el Doppler continuo?", options: ["a) Onda pulsátil", "b) Onda continua", "c) Onda sinusoidal", "d) Onda cuadrada"], answer: "b"},
+  {q: "¿Qué fenómeno ocurre cuando los ultrasonidos cambian de dirección al pasar entre tejidos con diferentes velocidades de propagación?", options: ["a) Reflexión", "b) Refracción", "c) Difracción", "d) Dispersión"], answer: "b"},
+  {q: "¿Qué tipo de imagen ecográfica muestra una gráfica de picos correspondientes a los ecos recibidos?", options: ["a) Modo A", "b) Modo B", "c) Modo M", "d) Modo Doppler"], answer: "a"},
+  {q: "¿Qué unidad se utiliza para medir la impedancia acústica?", options: ["a) Decibelios (dB)", "b) Vatios por metro cuadrado (W/m²)", "c) Rayls", "d) Hertzios (Hz)"], answer: "c"},
+  {q: "¿Qué artefacto se produce cuando los ultrasonidos rebotan múltiples veces entre dos superficies reflectantes?", options: ["a) Artefacto de cola de cometa", "b) Artefacto de reverberación", "c) Artefacto de espejo", "d) Artefacto de refracción"], answer: "b"},
+  {q: "¿Qué tipo de ecografía permite reconstruir volúmenes anatómicos en 3D?", options: ["a) Ecografía Doppler", "b) Ecografía 4D", "c) Ecografía 3D", "d) Ecografía Modo M"], answer: "c"},
+  {q: "¿Qué frecuencia supera el límite audible humano (20 kHz)?", options: ["a) Infrasonidos", "b) Ultrasonidos", "c) Sonidos audibles", "d) Microondas"], answer: "b"},
+  {q: "¿Qué tipo de transductor emite y recibe ultrasonidos simultáneamente en estudios Doppler continuo?", options: ["a) Transductor de un solo cristal", "b) Transductor de doble cristal", "c) Transductor lineal", "d) Transductor sectorial"], answer: "a"},
+  {q: "¿Qué propiedad de los tejidos determina la cantidad de eco reflejado?", options: ["a) Impedancia acústica", "b) Densidad óptica", "c) Conductividad térmica", "d) Elasticidad"], answer: "a"},
+  {q: "¿Qué tipo de artefacto se observa cuando un tendón aparece hipoecoico debido al ángulo de incidencia del haz?", options: ["a) Artefacto de anisotropía", "b) Artefacto de sombra", "c) Artefacto de refuerzo posterior", "d) Artefacto de lóbulos laterales"], answer: "a"},
+  {q: "¿Qué técnica ecográfica se utiliza para evaluar el flujo sanguíneo?", options: ["a) Modo A", "b) Modo B", "c) Doppler", "d) Modo M"], answer: "c"},
+  {q: "¿Qué tipo de imagen ecográfica registra el movimiento de estructuras como el corazón?", options: ["a) Modo A", "b) Modo B", "c) Modo M", "d) Modo RT"], answer: "c"},
+  {q: "¿Qué tipo de sonda se utiliza para estudios abdominales y pélvicos debido a su campo de visión ampliado?", options: ["a) Lineal", "b) Convex", "c) Sectorial", "d) Anular"], answer: "b"},
+  {q: "¿Qué fenómeno físico permite que los cristales piezoeléctricos generen ultrasonidos?", options: ["a) Efecto Joule", "b) Efecto Doppler", "c) Efecto piezoeléctrico inverso", "d) Efecto termoiónico"], answer: "c"},
+  {q: "¿Qué tipo de artefacto se produce cuando una burbuja de gas genera una sombra con ecos dispersos detrás?", options: ["a) Sombra limpia", "b) Sombra sucia", "c) Refuerzo posterior", "d) Artefacto de espejo"], answer: "b"},
+  {q: "¿Qué parámetro técnico permite ajustar la diferencia de amplitud entre ecos para mejorar la imagen?", options: ["a) Frecuencia", "b) Ganancia", "c) Rango dinámico", "d) Impedancia"], answer: "c"},
+  {q: "¿Qué tipo de ecografía combina imágenes 3D con tiempo real?", options: ["a) Ecografía 4D", "b) Ecografía Doppler", "c) Ecografía Modo M", "d) Ecografía Modo A"], answer: "a"},
+  {q: "¿Qué tipo de onda ultrasónica se utiliza en la mayoría de las ecografías diagnósticas?", options: ["a) Onda continua", "b) Onda pulsátil", "c) Onda sinusoidal", "d) Onda cuadrada"], answer: "b"},
+  {q: "¿Qué autor inició las aplicaciones ginecológicas de los ultrasonidos?", options: ["a) Karl Dussik", "b) Ian Donald", "c) Douglas Howry", "d) Paul Langevin"], answer: "b"},
+  {q: "¿Qué tipo de transductor utiliza múltiples cristales dispuestos en un arco para generar una imagen sectorial?", options: ["a) Lineal", "b) Convex", "c) Sectorial electrónico", "d) Anular"], answer: "c"},
+  {q: "¿Qué propiedad del sonido permite que los ultrasonidos se propaguen en los tejidos?", options: ["a) Ionización", "b) Reflexión", "c) Transmisión longitudinal", "d) Dispersión"], answer: "c"},
+  {q: "¿Qué tipo de artefacto puede ayudar a identificar la punta de una aguja durante una punción ecoguiada?", options: ["a) Artefacto de cola de cometa", "b) Artefacto de reverberación", "c) Artefacto de espejo", "d) Artefacto de anisotropía"], answer: "a"},
+  {q: "¿Qué frecuencia de ultrasonido proporciona mayor resolución pero menor penetración?", options: ["a) 2 MHz", "b) 5 MHz", "c) 10 MHz", "d) 20 MHz"], answer: "d"},
+  {q: "¿Qué ley física establece que la energía incidente es igual a la suma de la energía reflejada y transmitida?", options: ["a) Ley de Snell", "b) Ley de conservación de la energía", "c) Ley de Ohm", "d) Ley de Hooke"], answer: "b"},
+  {q: "¿Qué tipo de sonda se utiliza en pediatría para estudios abdominales y cerebrales?", options: ["a) Sectorial multifrecuencia", "b) Lineal sectorial", "c) Sonda lápiz multifrecuencia", "d) Convex"], answer: "c"},
+  {q: "¿Qué artefacto se produce cuando una estructura aparece duplicada debido a reflexiones múltiples?", options: ["a) Artefacto de espejo", "b) Artefacto de refracción", "c) Artefacto de anisotropía", "d) Artefacto de sombra"], answer: "a"},
+  {q: "¿Qué tipo de ecografía muestra una imagen bidimensional en escala de grises?", options: ["a) Modo A", "b) Modo B", "c) Modo M", "d) Doppler"], answer: "b"},
+  {q: "¿Qué parámetro técnico se define como la resistencia de la onda sonora al pasar por un medio?", options: ["a) Impedancia acústica", "b) Ganancia", "c) Frecuencia", "d) Rango dinámico"], answer: "a"},
+  {q: "¿Qué tipo de transductor emite ultrasonidos solo cuando sus cristales giran?", options: ["a) Transductor lineal", "b) Transductor sectorial mecánico", "c) Transductor convex", "d) Transductor anular"], answer: "b"}
+],
+  "Primeros Auxilios": [
+    {q: "¿Cuál de las siguientes NO es una recomendación del European Resuscitation Council (ERC) para la enseñanza de la RCP básica?", options: ["a) La enseñanza del Soporte Vital Básico debe ser obligatoria en todas las escuelas de odontología y enfermería.", "b) Todos los hospitales europeos han de asegurar un programa de formación continuada en RCP para todo el personal médico.", "c) Solo el personal médico de emergencias debe estar entrenado en SVB.", "d) Todas las escuelas europeas deben de incluir la enseñanza del Soporte Vital Básico."], answer: "c"},
+    {q: "¿Cuál es la definición de Parada Cardiorrespiratoria (PCR) según el texto?", options: ["a) Cese gradual de la respiración.", "b) Cese brusco e inesperado y potencialmente reversible de la respiración y circulación espontánea.", "c) Disminución de la frecuencia cardíaca.", "d) Cese de la circulación sanguínea, pero con respiración presente."], answer: "b"},
+    {q: "¿Qué diferencia la Resucitación Cardiopulmonar Básica (RCP-B) de la Resucitación Cardiopulmonar Avanzada (RCP-A)?", options: ["a) La RCP-B utiliza medicación, mientras que la RCP-A no.", "b) La RCP-B se lleva a cabo sin material, mientras que la RCP-A utiliza medios materiales y humanos especializados.", "c) La RCP-B es realizada por personal especializado, y la RCP-A por cualquier persona.", "d) No hay diferencia, son el mismo procedimiento."], answer: "b"},
+    {q: "¿Cuáles son los cuatro eslabones de la cadena de supervivencia en el Soporte Vital Básico?", options: ["a) Activación de los servicios de emergencia, RCP-B, desfibrilación precoz, RCP-A.", "b) Evaluación del paciente, RCP-B, traslado, estabilización.", "c) Desfibrilación precoz, RCP-A, traslado, medicación.", "d) Ninguna de las anteriores."], answer: "a"},
+    {q: "En la valoración de consciencia, ¿qué se debe hacer si se sospecha de una caída?", options: ["a) Mover al paciente rápidamente para evaluar daños.", "b) No mover la zona cervical.", "c) Girar al paciente sobre su espalda.", "d) Aplicar presión en la zona afectada."], answer: "b"},
+    {q: "¿Cuál de las siguientes afirmaciones es correcta respecto a la relación entre la parada respiratoria y la pérdida de consciencia?", options: ["a) La pérdida de consciencia siempre implica una parada respiratoria.", "b) La parada respiratoria siempre implica la pérdida de consciencia.", "c) La parada respiratoria puede presentarse con o sin pérdida de consciencia.", "d) La pérdida de consciencia nunca está relacionada con la parada respiratoria."], answer: "b"},
+    {q: "¿Durante cuánto tiempo se debe realizar la maniobra de \"Ver, Oír y Sentir\" para valorar la ventilación?", options: ["a) 2-3 segundos.", "b) 5-10 segundos.", "c) 15 segundos.", "d) 1 minuto."], answer: "b"},
+    {q: "¿Para qué se emplea la Posición Lateral de Seguridad (PLS)?", options: ["a) Para facilitar la respiración en pacientes con parada cardíaca.", "b) Para evitar la caída de la lengua hacia la faringe o la aspiración del contenido gástrico en caso de vómitos.", "c) Para realizar la RCP de manera más efectiva.", "d) Para controlar hemorragias externas."], answer: "b"},
+    {q: "En caso de PCR secundaria a hipoxia, ¿cuál es la secuencia de actuación recomendada?", options: ["a) Pedir ayuda inmediatamente y luego iniciar la RCP.", "b) Iniciar la RCP durante 1 minuto y luego pedir ayuda.", "c) Alternar 30 compresiones con 2 ventilaciones sin pedir ayuda.", "d) Aplicar descargas eléctricas con un DEA."], answer: "b"},
+    {q: "¿Cómo se debe interpretar la respiración en \"boqueadas\" o \"gasping\"?", options: ["a) Como una respiración normal.", "b) Como una respiración efectiva.", "c) Como ausencia de respiración y tratarla como una PCR.", "d) Como una señal de recuperación del paciente."], answer: "c"},
+    {q: "¿Cuál es la relación correcta de compresiones/insuflaciones en la RCP?", options: ["a) 15 compresiones / 2 insuflaciones.", "b) 30 compresiones / 1 insuflación.", "c) 30 compresiones / 2 insuflaciones.", "d) 20 compresiones / 2 insuflaciones."], answer: "c"},
+    {q: "¿Qué se debe evitar al realizar las insuflaciones en el boca a boca?", options: ["a) Insuflar aire rápidamente para evitar que llegue al estómago.", "b) Insuflar con una concentración de oxígeno mayor al 21%.", "c) Taponar los orificios nasales.", "d) Hacer una inspiración profunda."], answer: "a"},
+    {q: "¿Cuál es la profundidad de la depresión del esternón recomendada durante el masaje cardíaco externo?", options: ["a) 2-3 cm.", "b) 4-5 cm.", "c) 6-7 cm.", "d) 1 cm."], answer: "b"},
+    {q: "¿Aproximadamente cuántas compresiones por minuto se deben realizar en el masaje cardíaco?", options: ["a) 60 compresiones.", "b) 80 compresiones.", "c) 100 compresiones.", "d) 120 compresiones."], answer: "c"},
+    {q: "¿Qué maniobra se utiliza para desobstruir las vías aéreas en una persona consciente con obstrucción grave?", options: ["a) Maniobra frente-mentón.", "b) Posición Lateral de Seguridad.", "c) Maniobra de Heimlich.", "d) Respiración boca a boca."], answer: "c"},
+    {q: "¿Dónde se coloca la mano para realizar la maniobra de Heimlich?", options: ["a) En el pecho.", "b) En el abdomen, por encima del ombligo.", "c) En el epigastrio, con el puño cerrado y el pulgar hacia dentro.", "d) En la espalda, entre los omóplatos."], answer: "c"},
+    {q: "¿Cómo se modifica la maniobra de Heimlich en embarazadas y personas obesas?", options: ["a) No se modifica.", "b) Se abraza el tercio inferior torácico.", "c) Se comprime el abdomen con más fuerza.", "d) Se coloca a la persona en decúbito supino."], answer: "b"},
+    {q: "¿Cuál es el primer paso para detener una hemorragia externa?", options: ["a) Aplicar un torniquete.", "b) Elevar la extremidad afectada.", "c) Comprimir directamente sobre la herida con un apósito limpio.", "d) Lavar la herida con agua y jabón."], answer: "c"},
+    {q: "¿Cuándo está indicado el uso de torniquetes?", options: ["a) En cualquier hemorragia externa.", "b) Solo en amputaciones traumáticas.", "c) Para detener hemorragias nasales.", "d) En hemorragias internas."], answer: "b"},
+    {q: "¿Qué precaución se debe tener al enfriar un miembro amputado?", options: ["a) Aplicar hielo directamente sobre el miembro.", "b) Introducir el miembro en una bolsa con hielo o nieve, evitando el contacto directo.", "c) Mantener el miembro a temperatura ambiente.", "d) Envolver el miembro en un paño caliente."], answer: "b"},
+    {q: "¿Cómo se mide el tamaño apropiado de una cánula de Guedel?", options: ["a) Por el ancho de la boca del paciente.", "b) Por la distancia entre la comisura de los labios y el lóbulo de la oreja.", "c) Por la longitud de la nariz del paciente.", "d) No se mide, el tamaño es estándar."], answer: "b"},
+    {q: "¿Cuál es la causa más frecuente de PCR?", options: ["a) Asfixia.", "b) Hemorragia masiva.", "c) Fibrilación ventricular (FV) y taquicardia ventricular sin pulso (TVSP).", "d) Reacción alérgica grave."], answer: "c"},
+    {q: "¿Qué diferencia a un Desfibrilador Externo Automático (DEA) automático de uno semiautomático?", options: ["a) El DEA automático solo aconseja la descarga, el semiautomático la administra directamente.", "b) El DEA semiautomático solo aconseja la descarga, el automático la administra directamente.", "c) No hay diferencia, ambos realizan la misma función.", "d) El DEA automático mide la presión arterial, el semiautomático no."], answer: "b"},
+    {q: "¿Qué volumen suele tener el resucitador manual (Ambú) para adultos?", options: ["a) 500 ml.", "b) 1000 ml.", "c) 1600 ml.", "d) 2000 ml."], answer: "c"},
+    {q: "¿Cuándo se debe suspender la RCP básica?", options: ["a) Solo cuando el reanimador esté exhausto.", "b) Cuando lleguen los equipos especializados, el paciente se recupere, esté explícita la renuncia en el testamento vital, sea consecuencia de una enfermedad incurable o tras 30 minutos sin actividad cardíaca.", "c) Después de 10 minutos si no hay respuesta.", "d) Nunca se debe suspender."], answer: "b"},
+    {q: "¿Cuál es la principal causa de PCR en niños?", options: ["a) Problemas cardíacos.", "b) Disfunciones respiratorias.", "c) Traumatismos.", "d) Hemorragias."], answer: "b"},
+    {q: "¿Cómo se realiza la RCP en niños?", options: ["a) Igual que en adultos.", "b) Con 1 mano y comprimiendo el tórax 5 cm.", "c) Con 2 dedos y comprimiendo el tórax unos 2 cm.", "d) Con el talón de la mano y 150 compresiones por minuto."], answer: "c"},
+    {q: "¿Qué material NO suele encontrarse en un carro de parada?", options: ["a) Laringoscopio.", "b) Pinzas de Magill.", "c) Ecógrafo.", "d) Ambú."], answer: "c"},
+    {q: "¿Cuál de los siguientes NO es un signo clínico de hemorragia?", options: ["a) Palidez.", "b) Sudor frío.", "c) Pulso lento.", "d) Pérdida de consciencia."], answer: "c"},
+    {q: "En caso de hemorragia externa, ¿cuál es el método de compresión arterial?", options: ["a) Comprimir directamente sobre la herida.", "b) Presionar la arteria proximal a la herida.", "c) Elevar la extremidad por debajo del nivel del corazón.", "d) Aplicar frío local."], answer: "b"},
+    {q: "¿Cómo se debe colocar a un paciente con hemorragia interna?", options: ["a) Decúbito prono.", "b) Decúbito supino con la cabeza más baja que los pies.", "c) Posición lateral de seguridad.", "d) Sentado con la cabeza hacia atrás."], answer: "b"},
+    {q: "¿Qué se debe hacer en caso de epistaxis (hemorragia nasal)?", options: ["a) Inclinar la cabeza hacia atrás.", "b) Comprimir el orificio nasal que sangra durante 5 minutos con la cabeza ligeramente inclinada hacia delante.", "c) Tapar ambos orificios nasales inmediatamente.", "d) Aplicar calor local."], answer: "b"},
+    {q: "¿Qué indica la presencia de otorragia?", options: ["a) Una simple hemorragia en el oído.", "b) Posible fractura en la base del cráneo.", "c) Infección del oído.", "d) Rotura del tímpano."], answer: "b"},
+    {q: "¿Cuál es la posición correcta para un paciente con hemorragia vaginal?", options: ["a) Decúbito prono con las piernas elevadas.", "b) Decúbito supino con los pies cruzados.", "c) Decúbito lateral derecho.", "d) Sentado con las piernas colgando."], answer: "b"},
+    {q: "En una reacción alérgica leve, ¿qué medida NO se debe tomar?", options: ["a) Tranquilizar al paciente.", "b) Administrar oxígeno.", "c) Administrar adrenalina IV.", "d) Inyectar un antihistamínico si hay reacción cutánea."], answer: "c"},
+    {q: "¿Cuál es el tratamiento para el shock anafiláctico (reacción alérgica grave)?", options: ["a) Antihistamínicos orales.", "b) Adrenalina IV y mantener vías permeables.", "c) Solo administrar suero glucosado.", "d) Colocar al paciente en Posición Lateral de Seguridad."], answer: "b"},
+    {q: "¿Qué debe conocer el técnico en radiología ante una emergencia sanitaria?", options: ["a) Solo las técnicas de RCP.", "b) Síntomas y signos que pueda presentar un paciente y las técnicas de RCP.", "c) Solo el manejo del carro de emergencias.", "d) No tiene ninguna responsabilidad específica."], answer: "b"},
+    {q: "¿Qué norma se debe cumplir al trasladar a un paciente crítico a Rx?", options: ["a) Puede ir solo si está estable.", "b) Debe ir siempre acompañado por un médico y un enfermero.", "c) No es necesario monitorizarlo.", "d) El técnico de Rx es el responsable del traslado."], answer: "b"},
+    {q: "¿Cuál es el propósito principal del carro de parada?", options: ["a) Trasladar pacientes.", "b) Atender paradas cardiorrespiratorias.", "c) Almacenar material de radiología.", "d) Realizar estudios radiológicos de emergencia."], answer: "b"},
+    {q: "¿Qué fármaco del carro de parada produce un aumento de la frecuencia cardíaca?", options: ["a) Salbutamol.", "b) Adrenalina.", "c) Diazepan.", "d) Nitroglicerina."], answer: "b"}
+  ]
+  };
+
+  const examSelector = document.getElementById('exam-selector');
+  const questionsContainer = document.getElementById('questions-container');
+  const startBtn = document.getElementById('start-btn');
+  const resultContainer = document.getElementById('result-container');
+
+  // Llenar selector con temas disponibles
+  function populateExamSelector() {
+    Object.keys(examsData).forEach(key => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = key;
+      examSelector.appendChild(option);
+    });
+  }
+
+  // Mostrar preguntas de tema seleccionado
+  function showQuestionsForExam(exam) {
+    questionsContainer.innerHTML = '';
+    resultContainer.innerHTML = '';
+    resultContainer.className = '';
+    if (!exam) {
+      startBtn.disabled = true;
+      return;
+    }
+    examsData[exam].forEach((questionObj, index) => {
+      const questionBlock = document.createElement('div');
+      questionBlock.classList.add('question-block');
+      const qText = document.createElement('div');
+      qText.classList.add('question-text');
+      qText.textContent = `${index + 1}. ${questionObj.q}`;
+      questionBlock.appendChild(qText);
+
+      const optionsDiv = document.createElement('div');
+      optionsDiv.classList.add('options');
+      questionObj.options.forEach(optionText => {
+        const label = document.createElement('label');
+        const input = document.createElement('input');
+        input.type = 'radio';
+        input.name = `question_${index}`;
+        input.value = optionText[0];
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(' ' + optionText));
+        optionsDiv.appendChild(label);
+      });
+      questionBlock.appendChild(optionsDiv);
+      questionsContainer.appendChild(questionBlock);
+    });
+    startBtn.disabled = false;
+    startBtn.textContent = 'Calcular Nota';
+  }
+
+  // Verifica que todas las preguntas hayan sido respondidas
+  function allAnswered(exam) {
+    const questionsCount = examsData[exam].length;
+    for(let i=0; i < questionsCount; i++) {
+      const radios = document.getElementsByName(`question_${i}`);
+      if (![...radios].some(r=>r.checked)) return false;
+    }
+    return true;
+  }
+
+  // Calcular nota y mostrar resultados
+  function calculateGrade(exam) {
+    if (!allAnswered(exam)) {
+      alert('Por favor responde todas las preguntas antes de calcular la nota.');
+      return;
+    }
+    let correctCount = 0;
+    let resultsHTML = '';
+    examsData[exam].forEach((qObj, idx) => {
+      const radios = document.getElementsByName(`question_${idx}`);
+      const selected = [...radios].find(r => r.checked);
+      const userAnswer = selected ? selected.value : '';
+      let isCorrect = (userAnswer === qObj.answer);
+      if (isCorrect) correctCount++;
+
+      resultsHTML += `<div><strong>Pregunta ${idx+1}:</strong> ${qObj.q}<br>`;
+      if (isCorrect) {
+        resultsHTML += `<span class="correct-answer">Tu respuesta: ${userAnswer} (Correcto)</span>`;
+      } else {
+        resultsHTML += `<span class="incorrect-answer">Tu respuesta: ${userAnswer} (Incorrecto)</span><br>`;
+        resultsHTML += `<span>Respuesta correcta: ${qObj.answer}</span>`;
+      }
+      resultsHTML += `</div><hr>`;
+    });
+    const totalQuestions = examsData[exam].length;
+    const passCount = Math.ceil(totalQuestions/2);
+    const score = (correctCount/totalQuestions)*10;
+    let message = '';
+    if(correctCount >= passCount){
+      message = `¡Muy bien hecho! <span class="icon-bird" aria-label="Pájaro">&#128038;</span>`;
+      resultContainer.className = 'pass';
+    } else {
+      message = 'Sigue intentándolo.';
+      resultContainer.className = 'fail';
+    }
+    resultContainer.innerHTML = `<h2>Tu nota: ${score.toFixed(2)} / 10</h2><p>${message}</p><div id="result-details">${resultsHTML}</div>`;
+    resultContainer.focus();
+  }
+
+  examSelector.addEventListener('change', () => {
+    resultContainer.innerHTML = '';
+    resultContainer.className = '';
+    showQuestionsForExam(examSelector.value);
+  });
+
+  startBtn.addEventListener('click', () => {
+    if (examSelector.value) calculateGrade(examSelector.value);
+  });
+
+  populateExamSelector();
+</script>
+
+</body>
+</html>
+</content>
+</create_file>
